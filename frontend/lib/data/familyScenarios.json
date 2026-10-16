@@ -1,0 +1,38 @@
+[
+  {
+    "id": "need-help",
+    "title": "I need help",
+    "description": "Practice asking for help together. One of you is the child, one is the parent. You will each pick a sign, then confirm it together.",
+    "situation": "You are playing at the park and you fall and scrape your knee. You want to tell a grown-up you need help.",
+    "steps": [
+      {
+        "id": "view-situation",
+        "type": "situation",
+        "prompt": "Read the situation together out loud."
+      },
+      {
+        "id": "parent-reference",
+        "type": "parent-reference",
+        "prompt": "Parent: look at the reference sign for I need help. This is a placeholder picture, not a verified ISL recording yet.",
+        "cardId": "basic-01"
+      },
+      {
+        "id": "child-practice",
+        "type": "child-practice",
+        "prompt": "Child: pick the card that matches what you want to say.",
+        "options": ["basic-01", "feel-06", "health-05", "family-04"],
+        "correctCardId": "basic-01"
+      },
+      {
+        "id": "confirm-meaning",
+        "type": "confirm",
+        "prompt": "Both of you: check this is the message you want to send."
+      },
+      {
+        "id": "complete",
+        "type": "complete",
+        "prompt": "Well done! You practiced asking for help together. Come back and try it again any time."
+      }
+    ]
+  }
+]

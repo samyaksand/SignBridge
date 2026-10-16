@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   SignBridge Design Tokens
+   ========================================================================== */
+:root {
+  /* Surfaces - warm, reading-heavy / child-facing */
+  --color-surface: #fbf9f4;
+  --color-surface-raised: #ffffff;
+  --color-surface-muted: #f1ede3;
+  --color-border: #e4ddcd;
+  --color-text: #221f1a;
+  --color-text-muted: #5b564a;
+
+  /* Parent mode - deep midnight navy */
+  --color-navy-950: #070b18;
+  --color-navy-900: #0b1224;
+  --color-navy-800: #121a34;
+  --color-navy-700: #1b2746;
+  --color-navy-border: #2b3a63;
+  --color-navy-text: #eef1fb;
+  --color-navy-text-muted: #a7b2d6;
+
+  /* Brand */
+  --color-teal-600: #0e7c86;
+  --color-teal-500: #13929e;
+  --color-teal-400: #2fb0bb;
+  --color-blue-600: #2655d1;
+  --color-blue-500: #3a6bf0;
+  --color-blue-400: #6a8ef6;
+
+  /* Status */
+  --color-success: #1f9d55;
+  --color-warning: #b9792a;
+  --color-danger: #c23b3b;
+
+  /* Typography */
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+  --radius-full: 999px;
+
+  /* Shadows - restrained */
+  --shadow-sm: 0 1px 2px rgba(20, 20, 15, 0.06);
+  --shadow-md: 0 4px 16px -4px rgba(20, 20, 15, 0.12);
+  --shadow-lg: 0 12px 32px -8px rgba(20, 20, 15, 0.18);
+  --shadow-navy-glow: 0 0 60px -12px rgba(58, 107, 240, 0.35);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(58, 107, 240, 0.55);
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-base: 220ms;
+  --motion-slow: 420ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --background: var(--color-surface);
+  --foreground: var(--color-text);
+}
+
+:root[data-theme="dark"] {
+  --color-surface: #0f1320;
+  --color-surface-raised: #161b2c;
+  --color-surface-muted: #1b2235;
+  --color-border: #2b3350;
+  --color-text: #f1f3fb;
+  --color-text-muted: #b2b9d6;
+  --background: var(--color-surface);
+  --foreground: var(--color-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  transition: background-color var(--motion-base) var(--motion-ease),
+    color var(--motion-base) var(--motion-ease);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Visible, consistent focus rings everywhere */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+a, button {
+  touch-action: manipulation;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--color-teal-600);
+  color: white;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  z-index: 100;
+}
+
+.skip-link:focus {
+  left: var(--space-4);
+  top: var(--space-4);
+}
