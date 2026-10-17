@@ -1,5 +1,5 @@
 /**
- * Landmark normalization utilities — TypeScript mirror of ml/src/normalization.py.
+ * Landmark normalization utilities, TypeScript mirror of ml/src/normalization.py.
  *
  * Used by the (future, inactive in M1) in-browser inference pipeline to
  * normalize hand/body landmark sequences the same way the Python training

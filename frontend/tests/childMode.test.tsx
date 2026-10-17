@@ -28,7 +28,7 @@ describe('ChildModeClient', () => {
       expect(screen.getByText(/could not turn on the camera/i)).toBeInTheDocument();
     });
     // App should still be usable, cards link present
-    expect(screen.getByText(/Quick Cards/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Quick Cards/i).length).toBeGreaterThan(0);
   });
 
   it('only enables Speak after a prediction has been confirmed into the message', async () => {

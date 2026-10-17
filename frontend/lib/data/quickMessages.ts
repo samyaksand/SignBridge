@@ -4,7 +4,7 @@ export interface QuickMessage {
   hi: string;
 }
 
-/** Curated local sentence suggestions used in Parent Mode — no network call. */
+/** Curated local sentence suggestions used in Parent Mode, no network call. */
 export const QUICK_MESSAGES: QuickMessage[] = [
   { id: 'qm-01', en: 'I need help', hi: 'मुझे मदद चाहिए' },
   { id: 'qm-02', en: 'I love you', hi: 'मैं तुमसे प्यार करता/करती हूँ' },

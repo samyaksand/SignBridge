@@ -1,0 +1,16 @@
+{
+  "name": "signbridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SignBridge: connecting hands, bridging worlds. Run both the frontend and the optional backend together with one command.",
+  "scripts": {
+    "dev": "node scripts/print-banner.js && concurrently -n frontend,backend -c blue,green --kill-others-on-fail \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "node scripts/run-backend.js",
+    "build": "npm run build --prefix frontend",
+    "test": "npm run test --prefix frontend && python -m pytest ml/tests backend/tests -v"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

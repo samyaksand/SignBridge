@@ -1,0 +1,16 @@
+{
+  "description": "Target vocabulary for a future ISL sign-recognition model. This list is a planning scaffold only, no model has been trained on it yet.",
+  "words": [
+    "help", "hungry", "water", "food", "toilet", "thirsty",
+    "happy", "sad", "scared", "angry", "tired", "break",
+    "unwell", "pain", "headache", "parent", "doctor", "unsafe",
+    "hello", "love", "come", "wait", "play", "home",
+    "understand", "again", "question", "answer", "time",
+    "yes", "no", "thanks", "sorry"
+  ],
+  "sourceDataset": {
+    "name": "INCLUDE",
+    "zenodoRecord": "4010759",
+    "status": "not downloaded, scaffold only"
+  }
+}

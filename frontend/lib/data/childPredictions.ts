@@ -7,7 +7,7 @@ export interface DemoPrediction {
 
 /**
  * Sample prediction sets used ONLY in Child Mode demo state. These are not
- * produced by a trained model — Milestone 1 has no model. Always rendered
+ * produced by a trained model, Milestone 1 has no model. Always rendered
  * behind a clearly labeled "Demo mode" banner.
  */
 export const DEMO_PREDICTION_SETS: DemoPrediction[][] = [
