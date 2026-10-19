@@ -72,15 +72,29 @@ export function ParentModeClient() {
       setListening(false);
       return;
     }
+    interface SpeechRecognitionResultLike {
+      results?: { [index: number]: { [index: number]: { transcript: string } } };
+    }
+    interface SpeechRecognitionLike {
+      lang: string;
+      interimResults: boolean;
+      onresult: ((event: SpeechRecognitionResultLike) => void) | null;
+      onend: (() => void) | null;
+      start: () => void;
+      stop: () => void;
+    }
     const SpeechRecognitionCtor =
-      (window as unknown as { webkitSpeechRecognition?: new () => any; SpeechRecognition?: new () => any })
-        .SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: new () => any }).webkitSpeechRecognition;
+      (window as unknown as {
+        webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+        SpeechRecognition?: new () => SpeechRecognitionLike;
+      }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognitionLike })
+        .webkitSpeechRecognition;
     if (!SpeechRecognitionCtor) return;
     const recognition = new SpeechRecognitionCtor();
     recognition.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
     recognition.interimResults = false;
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionResultLike) => {
       const transcript = event.results?.[0]?.[0]?.transcript ?? '';
       setText(transcript);
     };

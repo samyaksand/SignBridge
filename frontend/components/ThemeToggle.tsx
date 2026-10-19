@@ -4,19 +4,26 @@ import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { applyTheme, getStoredTheme, storeTheme, Theme } from '@/lib/utils/theme';
 
+function getInitialTheme(): Theme {
+  const stored = getStoredTheme();
+  const prefersDark =
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  return stored ?? (prefersDark ? 'dark' : 'light');
+}
+
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = getStoredTheme();
-    const prefersDark =
-      typeof window !== 'undefined' &&
-      window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-    const initial: Theme = stored ?? (prefersDark ? 'dark' : 'light');
-    setTheme(initial);
-    applyTheme(initial);
+    applyTheme(theme);
+    // Marks that client-side hydration has completed so the accessible label
+    // (which depends on browser-only APIs) can be rendered safely.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    // Only apply on mount; subsequent theme changes are applied in toggle().
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggle = () => {
