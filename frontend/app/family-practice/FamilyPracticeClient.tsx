@@ -103,8 +103,8 @@ export function FamilyPracticeClient() {
         {activeScenario.steps.map((s, i) => (
           <li
             key={s.id}
-            className={`h-2 flex-1 rounded-full ${
-              i <= stepIndex ? 'bg-[var(--color-teal-600)]' : 'bg-[var(--color-border)]'
+            className={`h-2 flex-1 rounded-full transition-colors ${
+              i <= stepIndex ? 'bg-[var(--color-indigo-500)]' : 'bg-[var(--color-border)]'
             }`}
             aria-current={i === stepIndex ? 'step' : undefined}
           />
@@ -161,10 +161,10 @@ export function FamilyPracticeClient() {
                       setTryAgainNote(false);
                     }}
                     aria-pressed={selected}
-                    className={`flex flex-col items-center gap-2 rounded-[var(--radius-md)] border p-3 text-center transition-colors ${
+                    className={`flex min-h-[48px] flex-col items-center gap-2 rounded-[var(--radius-md)] border p-3 text-center transition-colors ${
                       selected
-                        ? 'border-[var(--color-teal-600)] bg-[var(--color-surface-muted)]'
-                        : 'border-[var(--color-border)]'
+                        ? 'border-[var(--color-indigo-500)] bg-[var(--color-surface-muted)]'
+                        : 'border-[var(--color-border)] hover:border-[var(--color-teal-400)]'
                     }`}
                   >
                     <Image src={card.illustration} alt="" width={48} height={48} aria-hidden="true" />

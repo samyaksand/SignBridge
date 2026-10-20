@@ -6,6 +6,7 @@ import { Camera, CameraOff, Volume2, X, Sparkles, LayoutGrid } from 'lucide-reac
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { StatusMessage } from '@/components/ui/StatusMessage';
+import { usePreferences } from '@/lib/context/PreferencesContext';
 import { DEMO_PREDICTION_SETS, LOW_CONFIDENCE_THRESHOLD, DemoPrediction } from '@/lib/data/childPredictions';
 
 type ChildState =
@@ -19,6 +20,7 @@ type ChildState =
   | 'confirmed';
 
 export function ChildModeClient() {
+  const { speechEnabled, speechSupported } = usePreferences();
   const [state, setState] = useState<ChildState>('demo');
   const [cameraOn, setCameraOn] = useState(false);
   const [predictions, setPredictions] = useState<DemoPrediction[]>([]);
@@ -81,8 +83,10 @@ export function ChildModeClient() {
   const clearMessage = () => setMessage([]);
 
   const speakMessage = () => {
-    // Speak is only ever enabled after explicit confirmation into the message list.
+    // Speak is only ever enabled after explicit confirmation into the message list,
+    // and is also gated by the Communication Preferences "Speech" setting.
     if (message.length === 0) return;
+    if (!speechEnabled) return;
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const utterance = new SpeechSynthesisUtterance(message.map((p) => p.label).join('. '));
     window.speechSynthesis.speak(utterance);
@@ -158,8 +162,8 @@ export function ChildModeClient() {
         {state === 'unavailable' && (
           <div className="w-full">
             <StatusMessage kind="warning">
-              We could not turn on the camera. That is okay, you can still build a message
-              using{' '}
+              We could not turn on the camera. Maybe it is being used by another app, or
+              permission was not given. That is okay, you can still build a message using{' '}
               <Link href="/cards" className="font-medium underline">
                 Quick Cards
               </Link>
@@ -188,10 +192,10 @@ export function ChildModeClient() {
                   key={p.id}
                   onClick={() => setChosen(p)}
                   aria-pressed={chosen?.id === p.id}
-                  className={`rounded-[var(--radius-md)] border p-3 text-left transition-colors ${
+                  className={`min-h-[48px] rounded-[var(--radius-md)] border p-3 text-left transition-colors ${
                     chosen?.id === p.id
-                      ? 'border-[var(--color-teal-600)] bg-[var(--color-surface-muted)]'
-                      : 'border-[var(--color-border)]'
+                      ? 'border-[var(--color-indigo-500)] bg-[var(--color-surface-muted)]'
+                      : 'border-[var(--color-border)] hover:border-[var(--color-teal-400)]'
                   }`}
                 >
                   <p className="font-medium text-[var(--color-text)]">{p.label}</p>
@@ -202,14 +206,14 @@ export function ChildModeClient() {
                 </button>
               ))}
             </div>
-            <div className="mt-3 flex gap-2">
-              <Button onClick={confirmPrediction} disabled={!chosen}>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button size="lg" onClick={confirmPrediction} disabled={!chosen}>
                 Confirm
               </Button>
-              <Button variant="secondary" onClick={runDemoPrediction}>
+              <Button size="lg" variant="secondary" onClick={runDemoPrediction}>
                 Try Again
               </Button>
-              <Button variant="ghost" onClick={() => setChosen(null)}>
+              <Button size="lg" variant="ghost" onClick={() => setChosen(null)}>
                 Choose Another
               </Button>
             </div>
@@ -249,7 +253,17 @@ export function ChildModeClient() {
               </button>
             ))}
             <div className="ml-auto flex gap-2">
-              <Button onClick={speakMessage}>
+              <Button
+                onClick={speakMessage}
+                disabled={!speechSupported || !speechEnabled}
+                title={
+                  !speechSupported
+                    ? 'Speech is not supported in this browser'
+                    : !speechEnabled
+                      ? 'Speech is turned off in Communication Preferences'
+                      : undefined
+                }
+              >
                 <Volume2 size={16} aria-hidden="true" />
                 Speak
               </Button>

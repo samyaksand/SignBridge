@@ -15,7 +15,7 @@ const LINKS = [
 export function Nav() {
   const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur-md">
       <nav
         aria-label="Main navigation"
         className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6"
@@ -33,7 +33,7 @@ export function Nav() {
                   aria-current={active ? 'page' : undefined}
                   className={`inline-flex min-h-[44px] items-center rounded-[var(--radius-md)] px-3 font-medium transition-colors ${
                     active
-                      ? 'bg-[var(--color-teal-600)] text-white'
+                      ? 'bg-[var(--color-indigo-600)] text-white'
                       : 'text-[var(--color-text)] hover:bg-[var(--color-surface-muted)]'
                   }`}
                 >

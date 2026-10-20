@@ -6,6 +6,7 @@ import { Search, X, Volume2 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { StatusMessage } from '@/components/ui/StatusMessage';
+import { usePreferences } from '@/lib/context/PreferencesContext';
 import cardsData from '@/lib/data/communicationCards.json';
 
 interface CardEntry {
@@ -21,6 +22,7 @@ const CARDS = cardsData as CardEntry[];
 const CATEGORIES = Array.from(new Set(CARDS.map((c) => c.category)));
 
 export function CardsClient() {
+  const { speechEnabled, speechSupported } = usePreferences();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string | null>(null);
   const [message, setMessage] = useState<CardEntry[]>([]);
@@ -43,6 +45,9 @@ export function CardsClient() {
 
   const speak = () => {
     if (message.length === 0) return;
+    // Speech is gated by the Communication Preferences "Speech" setting on
+    // the homepage, in addition to actual browser support.
+    if (!speechEnabled) return;
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const utterance = new SpeechSynthesisUtterance(message.map((c) => c.en).join('. '));
     window.speechSynthesis.speak(utterance);
@@ -79,10 +84,10 @@ export function CardsClient() {
         <button
           onClick={() => setCategory(null)}
           aria-pressed={category === null}
-          className={`min-h-[40px] rounded-full border px-4 text-sm font-medium ${
+          className={`min-h-[44px] rounded-full border px-4 text-sm font-medium transition-colors ${
             category === null
-              ? 'border-[var(--color-teal-600)] bg-[var(--color-teal-600)] text-white'
-              : 'border-[var(--color-border)] text-[var(--color-text)]'
+              ? 'border-[var(--color-indigo-500)] bg-[var(--color-indigo-500)] text-white'
+              : 'border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-indigo-400)]'
           }`}
         >
           All
@@ -92,10 +97,10 @@ export function CardsClient() {
             key={cat}
             onClick={() => setCategory(cat)}
             aria-pressed={category === cat}
-            className={`min-h-[40px] rounded-full border px-4 text-sm font-medium ${
+            className={`min-h-[44px] rounded-full border px-4 text-sm font-medium transition-colors ${
               category === cat
-                ? 'border-[var(--color-teal-600)] bg-[var(--color-teal-600)] text-white'
-                : 'border-[var(--color-border)] text-[var(--color-text)]'
+                ? 'border-[var(--color-indigo-500)] bg-[var(--color-indigo-500)] text-white'
+                : 'border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-indigo-400)]'
             }`}
           >
             {cat}
@@ -118,7 +123,18 @@ export function CardsClient() {
               </button>
             ))}
             <div className="ml-auto flex gap-2">
-              <Button size="md" onClick={speak}>
+              <Button
+                size="md"
+                onClick={speak}
+                disabled={!speechSupported || !speechEnabled}
+                title={
+                  !speechSupported
+                    ? 'Speech is not supported in this browser'
+                    : !speechEnabled
+                      ? 'Speech is turned off in Communication Preferences'
+                      : undefined
+                }
+              >
                 <Volume2 size={16} aria-hidden="true" />
                 Speak
               </Button>
@@ -142,7 +158,7 @@ export function CardsClient() {
             <button
               key={card.id}
               onClick={() => addToMessage(card)}
-              className="flex flex-col items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-center transition-transform hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
+              className="flex min-h-[48px] flex-col items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-center transition-[transform,box-shadow,border-color] hover:-translate-y-0.5 hover:border-[var(--color-teal-400)] hover:shadow-[var(--shadow-md)]"
             >
               <Image src={card.illustration} alt="" width={56} height={56} aria-hidden="true" />
               <span className="text-xs font-semibold text-[var(--color-text)]">{card.en}</span>

@@ -105,7 +105,13 @@ export function ParentModeClient() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-[var(--color-navy-950)] text-[var(--color-navy-text)]">
+    <div
+      className="min-h-[calc(100vh-64px)] text-[var(--color-navy-text)]"
+      style={{
+        background:
+          'radial-gradient(60rem 40rem at 15% -10%, rgba(81,70,224,0.16), transparent 55%), radial-gradient(50rem 36rem at 100% 10%, rgba(21,144,153,0.12), transparent 55%), var(--color-navy-950)',
+      }}
+    >
       <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-10 sm:px-6">
         <div>
           <h1 className="text-2xl font-semibold sm:text-3xl">Parent Mode</h1>
@@ -137,8 +143,8 @@ export function ParentModeClient() {
                       onClick={() => setLang(l)}
                       className={`min-h-[44px] rounded-[var(--radius-md)] px-4 text-sm font-medium transition-colors ${
                         lang === l
-                          ? 'bg-[var(--color-teal-500)] text-white'
-                          : 'border border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)]'
+                          ? 'bg-[var(--color-indigo-500)] text-white'
+                          : 'border border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)] hover:border-[var(--color-indigo-400)]'
                       }`}
                     >
                       {l === 'en' ? 'English' : 'हिन्दी'}
@@ -164,7 +170,11 @@ export function ParentModeClient() {
                         ? 'Speak your message'
                         : 'Speech input is not supported in this browser'
                     }
-                    className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-navy-border)] text-[var(--color-navy-text)] disabled:opacity-40"
+                    className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border text-[var(--color-navy-text)] transition-colors disabled:opacity-40 ${
+                      listening
+                        ? 'border-[var(--color-teal-400)] bg-[var(--color-teal-600)]/20'
+                        : 'border-[var(--color-navy-border)] hover:border-[var(--color-indigo-400)]'
+                    }`}
                   >
                     {listening ? <MicOff size={18} /> : <Mic size={18} />}
                   </button>
@@ -207,7 +217,7 @@ export function ParentModeClient() {
               </h2>
               {hasDemo ? (
                 <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button
                       onClick={() => setIsPlaying((p) => !p)}
                       aria-label={isPlaying ? 'Pause' : 'Play'}
@@ -223,8 +233,10 @@ export function ParentModeClient() {
                       <RotateCcw size={16} />
                     </button>
                     <button
-                      aria-label="Fullscreen (not needed for this placeholder demo)"
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-navy-border)] text-[var(--color-navy-text)]"
+                      disabled
+                      aria-label="Fullscreen is not available for this placeholder demo yet"
+                      title="Fullscreen is not available for this placeholder demo yet"
+                      className="inline-flex h-11 w-11 cursor-not-allowed items-center justify-center rounded-full border border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)] opacity-50"
                     >
                       <Maximize size={16} />
                     </button>

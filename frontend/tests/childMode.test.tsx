@@ -2,6 +2,15 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChildModeClient } from '@/app/child/ChildModeClient';
+import { PreferencesProvider } from '@/lib/context/PreferencesContext';
+
+function renderChildMode() {
+  return render(
+    <PreferencesProvider>
+      <ChildModeClient />
+    </PreferencesProvider>
+  );
+}
 
 describe('ChildModeClient', () => {
   beforeEach(() => {
@@ -9,7 +18,7 @@ describe('ChildModeClient', () => {
   });
 
   it('labels demo mode clearly', () => {
-    render(<ChildModeClient />);
+    renderChildMode();
     expect(screen.getByText(/Demo mode:/i)).toBeInTheDocument();
   });
 
@@ -21,7 +30,7 @@ describe('ChildModeClient', () => {
       configurable: true,
     });
 
-    render(<ChildModeClient />);
+    renderChildMode();
     await user.click(screen.getByRole('button', { name: /Start Camera/i }));
 
     await waitFor(() => {
@@ -32,14 +41,14 @@ describe('ChildModeClient', () => {
   });
 
   it('only enables Speak after a prediction has been confirmed into the message', async () => {
-    render(<ChildModeClient />);
+    renderChildMode();
     // Initially no message, no speak button present
     expect(screen.queryByRole('button', { name: /^Speak$/i })).not.toBeInTheDocument();
   });
 
   it('runs a demo guess and requires explicit confirm before it is added to the message', async () => {
     const user = userEvent.setup();
-    render(<ChildModeClient />);
+    renderChildMode();
     await user.click(screen.getByRole('button', { name: /Try a demo guess/i }));
 
     await waitFor(

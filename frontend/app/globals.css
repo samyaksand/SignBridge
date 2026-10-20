@@ -4,27 +4,31 @@
    SignBridge Design Tokens
    ========================================================================== */
 :root {
-  /* Surfaces - warm, reading-heavy / child-facing */
-  --color-surface: #fbf9f4;
+  /* Surfaces - warm cream, reading-heavy / child-facing */
+  --color-surface: #faf7ef;
   --color-surface-raised: #ffffff;
-  --color-surface-muted: #f1ede3;
-  --color-border: #e4ddcd;
-  --color-text: #221f1a;
-  --color-text-muted: #5b564a;
+  --color-surface-muted: #f1ebdc;
+  --color-border: #e2d9c4;
+  --color-text: #1d1b2e;
+  --color-text-muted: #5c5a74;
 
-  /* Parent mode - deep midnight navy */
-  --color-navy-950: #070b18;
-  --color-navy-900: #0b1224;
-  --color-navy-800: #121a34;
-  --color-navy-700: #1b2746;
-  --color-navy-border: #2b3a63;
-  --color-navy-text: #eef1fb;
-  --color-navy-text-muted: #a7b2d6;
+  /* Parent mode - deep midnight navy / indigo */
+  --color-navy-950: #060815;
+  --color-navy-900: #0a0e22;
+  --color-navy-800: #121736;
+  --color-navy-700: #1c2350;
+  --color-navy-border: #2e3570;
+  --color-navy-text: #eef0fc;
+  --color-navy-text-muted: #a9aed8;
 
-  /* Brand */
-  --color-teal-600: #0e7c86;
-  --color-teal-500: #13929e;
-  --color-teal-400: #2fb0bb;
+  /* Brand: indigo, teal, turquoise, violet */
+  --color-teal-600: #0d7d85;
+  --color-teal-500: #159099;
+  --color-teal-400: #2cb3bb;
+  --color-indigo-600: #4338ca;
+  --color-indigo-500: #5146e0;
+  --color-indigo-400: #7c76ed;
+  --color-violet-500: #7c4ddb;
   --color-blue-600: #2655d1;
   --color-blue-500: #3a6bf0;
   --color-blue-400: #6a8ef6;
@@ -57,13 +61,13 @@
   --radius-full: 999px;
 
   /* Shadows - restrained */
-  --shadow-sm: 0 1px 2px rgba(20, 20, 15, 0.06);
-  --shadow-md: 0 4px 16px -4px rgba(20, 20, 15, 0.12);
-  --shadow-lg: 0 12px 32px -8px rgba(20, 20, 15, 0.18);
-  --shadow-navy-glow: 0 0 60px -12px rgba(58, 107, 240, 0.35);
+  --shadow-sm: 0 1px 2px rgba(20, 18, 30, 0.06);
+  --shadow-md: 0 4px 16px -4px rgba(20, 18, 30, 0.12);
+  --shadow-lg: 0 12px 32px -8px rgba(20, 18, 30, 0.18);
+  --shadow-navy-glow: 0 0 60px -12px rgba(81, 70, 224, 0.4);
 
   /* Focus ring */
-  --focus-ring: 0 0 0 3px rgba(58, 107, 240, 0.55);
+  --focus-ring: 0 0 0 3px rgba(81, 70, 224, 0.55);
 
   /* Motion */
   --motion-fast: 120ms;
@@ -73,15 +77,26 @@
 
   --background: var(--color-surface);
   --foreground: var(--color-text);
+
+  /* Site-wide readable text scale, controlled by the in-app text size setting */
+  --text-scale: 1;
+}
+
+:root[data-text-size="small"] {
+  --text-scale: 0.9;
+}
+
+:root[data-text-size="large"] {
+  --text-scale: 1.2;
 }
 
 :root[data-theme="dark"] {
-  --color-surface: #0f1320;
-  --color-surface-raised: #161b2c;
-  --color-surface-muted: #1b2235;
-  --color-border: #2b3350;
-  --color-text: #f1f3fb;
-  --color-text-muted: #b2b9d6;
+  --color-surface: #0e1120;
+  --color-surface-raised: #161a30;
+  --color-surface-muted: #1b2038;
+  --color-border: #2c3252;
+  --color-text: #f1f2fb;
+  --color-text-muted: #b3b6d8;
   --background: var(--color-surface);
   --foreground: var(--color-text);
 }
@@ -101,10 +116,15 @@ body {
   height: 100%;
 }
 
-body {
+html {
   background: var(--background);
+}
+
+body {
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-body);
+  font-size: calc(1rem * var(--text-scale));
   transition: background-color var(--motion-base) var(--motion-ease),
     color var(--motion-base) var(--motion-ease);
 }
@@ -125,7 +145,9 @@ a, button {
   touch-action: manipulation;
 }
 
-/* Reduced motion support */
+/* Reduced motion support: honors the OS-level setting, and also the
+   in-app "Reduce motion" toggle (data-reduced-motion on <html>), which
+   sets the exact same rule so both paths behave identically. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -133,6 +155,15 @@ a, button {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+:root[data-reduced-motion="true"] *,
+:root[data-reduced-motion="true"] *::before,
+:root[data-reduced-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }
 
 .skip-link {
@@ -149,4 +180,204 @@ a, button {
 .skip-link:focus {
   left: var(--space-4);
   top: var(--space-4);
+}
+
+/* ==========================================================================
+   Ambient background: soft gradients + gently drifting connection points.
+   Decorative only, kept behind content, never interactive.
+   ========================================================================== */
+.sb-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sb-ambient__glow {
+  position: absolute;
+  inset: -10%;
+  opacity: 0.55;
+  background:
+    radial-gradient(38rem 28rem at 12% 8%, rgba(81, 70, 224, 0.16), transparent 60%),
+    radial-gradient(42rem 32rem at 88% 18%, rgba(21, 144, 153, 0.14), transparent 60%),
+    radial-gradient(34rem 30rem at 50% 95%, rgba(124, 77, 219, 0.1), transparent 65%);
+}
+
+:root[data-theme="dark"] .sb-ambient__glow {
+  opacity: 0.8;
+  background:
+    radial-gradient(38rem 28rem at 12% 8%, rgba(81, 70, 224, 0.28), transparent 60%),
+    radial-gradient(42rem 32rem at 88% 18%, rgba(44, 179, 187, 0.2), transparent 60%),
+    radial-gradient(34rem 30rem at 50% 95%, rgba(124, 77, 219, 0.18), transparent 65%);
+}
+
+.sb-ambient__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+}
+
+:root[data-theme="dark"] .sb-ambient__lines {
+  opacity: 0.7;
+}
+
+.sb-ambient__lines line {
+  stroke: var(--color-indigo-400);
+  stroke-width: 1;
+  opacity: 0.35;
+}
+
+.sb-ambient__lines circle {
+  fill: var(--color-teal-400);
+  opacity: 0.55;
+}
+
+.sb-ambient__lines .sb-ambient__node {
+  animation: sb-drift 14s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.sb-ambient__lines .sb-ambient__node:nth-child(odd) {
+  animation-duration: 18s;
+  animation-direction: reverse;
+}
+
+@keyframes sb-drift {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(6px, -8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-ambient__lines .sb-ambient__node {
+    animation: none;
+  }
+}
+
+:root[data-reduced-motion="true"] .sb-ambient__lines .sb-ambient__node {
+  animation: none;
+}
+
+/* ==========================================================================
+   Hero visual: a focused "signs, text, pictures" motif that sits inside the
+   hero, layered above the ambient background. CSS/SVG only.
+   ========================================================================== */
+.sb-hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.sb-hero-visual__chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-sm);
+  min-width: 88px;
+  transition: transform var(--motion-base) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease),
+    border-color var(--motion-base) var(--motion-ease);
+}
+
+.sb-hero-visual__chip[data-active="true"] {
+  border-color: var(--color-indigo-400);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.sb-hero-visual__chip span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.sb-hero-visual__chip[data-active="true"] span {
+  color: var(--color-indigo-500);
+}
+
+.sb-hero-visual__pulse {
+  animation: sb-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-hero-visual__pulse {
+    animation: none;
+  }
+}
+
+:root[data-reduced-motion="true"] .sb-hero-visual__pulse {
+  animation: none;
+}
+
+@keyframes sb-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* ==========================================================================
+   Entrance animation: fade + slight rise, applied once on mount/scroll into
+   view via IntersectionObserver. Respects both motion-reduction paths by
+   simply not needing the transition to complete for content to be visible
+   (final state has opacity:1), and the global reduced-motion rule above
+   collapses the transition duration to ~0 either way.
+   ========================================================================== */
+.sb-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity var(--motion-slow) var(--motion-ease),
+    transform var(--motion-slow) var(--motion-ease);
+}
+
+.sb-reveal.sb-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Belt and braces: if JS hasn't run yet (or reduced motion is on), never
+   leave content invisible. */
+@media (prefers-reduced-motion: reduce) {
+  .sb-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:root[data-reduced-motion="true"] .sb-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.sb-mode-card {
+  transition: transform var(--motion-base) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease),
+    border-color var(--motion-base) var(--motion-ease);
+}
+
+.sb-mode-card:hover,
+.sb-mode-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-indigo-400);
+}
+
+.sb-mode-card[data-highlighted="true"] {
+  border-color: var(--color-indigo-500);
+  box-shadow: var(--shadow-md);
 }
