@@ -1,0 +1,10 @@
+{
+  "note": "SYNTHETIC SMOKE TEST LABELS, not a real ISL vocabulary mapping",
+  "classes": [
+    "fake_sign_a",
+    "fake_sign_b",
+    "fake_sign_c",
+    "fake_sign_d",
+    "fake_sign_e"
+  ]
+}

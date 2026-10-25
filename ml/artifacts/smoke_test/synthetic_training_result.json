@@ -1,0 +1,54 @@
+{
+  "label": "SYNTHETIC SMOKE TEST ONLY, NOT real accuracy, NOT based on real sign data",
+  "classes": [
+    "fake_sign_a",
+    "fake_sign_b",
+    "fake_sign_c",
+    "fake_sign_d",
+    "fake_sign_e"
+  ],
+  "num_epochs": 15,
+  "train_loss_first": 1.752848744392395,
+  "train_loss_last": 0.02567984163761139,
+  "val_loss": 0.018557807430624962,
+  "val_accuracy": 1.0,
+  "test_accuracy": 1.0,
+  "confusion_matrix": [
+    [
+      2,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      2,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      2,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      2,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      2
+    ]
+  ],
+  "signer_independent_split": true
+}

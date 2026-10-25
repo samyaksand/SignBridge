@@ -49,8 +49,14 @@ Run from the project root:
 python -m pytest ml/tests -v
 ```
 
-**Last actual run: 5 tests, all passing**, on Python 3.13.1 with pytest
-9.1.1 (already available in this environment, no install needed).
+**Last actual run: 17 tests, all passing**, on Python 3.13.1 with pytest
+9.1.1. Now covers normalization (5 tests), the model/splits/augmentation
+and a real synthetic training smoke test (9 tests, see
+`docs/MODEL_CARD.md` for why those numbers are not real accuracy), ONNX
+export/parity (1 test), and a MediaPipe synthetic extraction smoke test
+(1 test). mediapipe, onnx, and onnxruntime were installed during
+Checkpoint 3 (previously not installed); see `ml/README.md` for exact
+versions and install results.
 
 ## Backend tests (pytest)
 
