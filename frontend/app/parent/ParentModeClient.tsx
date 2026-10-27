@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { StatusMessage } from '@/components/ui/StatusMessage';
-import { AvatarPanel } from '@/components/AvatarPanel';
+import { LazyAvatarStage } from '@/components/avatar/LazyAvatarStage';
 import { QUICK_MESSAGES } from '@/lib/data/quickMessages';
 import cardsData from '@/lib/data/communicationCards.json';
+import { resolveAnimationClip } from '@/lib/data/signAnimationMap';
 
 type Lang = 'en' | 'hi';
 type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25;
@@ -44,6 +45,10 @@ export function ParentModeClient() {
   const recognitionRef = useRef<{ stop: () => void } | null>(null);
 
   const hasDemo = useMemo(() => Boolean(match), [match]);
+  const animationEntry = useMemo(
+    () => (match ? resolveAnimationClip(match.en) : resolveAnimationClip('')),
+    [match]
+  );
 
   const handleShow = () => {
     setSubmitted(text);
@@ -123,7 +128,12 @@ export function ParentModeClient() {
 
         <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:gap-10">
           <div className="flex w-full flex-col items-center gap-4 lg:w-1/2">
-            <AvatarPanel active={isPlaying && hasDemo} />
+            <LazyAvatarStage
+              clipName={animationEntry.clipName}
+              isPlaying={isPlaying && hasDemo}
+              speed={speed}
+              hasDemo={hasDemo}
+            />
             {submitted && (
               <p className="text-center text-lg font-medium" aria-live="polite">
                 {lang === 'hi' && match ? match.hi : submitted}
