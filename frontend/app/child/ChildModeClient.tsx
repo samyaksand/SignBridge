@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Camera, CameraOff, Volume2, X, Sparkles, LayoutGrid } from 'lucide-react';
+import { Camera, CameraOff, Volume2, X, Sparkles, LayoutGrid, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { StatusMessage } from '@/components/ui/StatusMessage';
 import { usePreferences } from '@/lib/context/PreferencesContext';
 import { DEMO_PREDICTION_SETS, LOW_CONFIDENCE_THRESHOLD, DemoPrediction } from '@/lib/data/childPredictions';
+import { requestSentenceSuggestions } from '@/lib/suggestions/requestSuggestions';
 
 type ChildState =
   | 'demo'
@@ -20,7 +21,7 @@ type ChildState =
   | 'confirmed';
 
 export function ChildModeClient() {
-  const { speechEnabled, speechSupported } = usePreferences();
+  const { speechEnabled, speechSupported, textLanguage } = usePreferences();
   const [state, setState] = useState<ChildState>('demo');
   const [cameraOn, setCameraOn] = useState(false);
   const [predictions, setPredictions] = useState<DemoPrediction[]>([]);
@@ -28,6 +29,15 @@ export function ChildModeClient() {
   const [message, setMessage] = useState<DemoPrediction[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // Optional sentence suggestions: never requested automatically, only on
+  // explicit tap, and never used for speech until the child/parent reviews
+  // and confirms the exact text themselves.
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestNote, setSuggestNote] = useState<string | null>(null);
+  const [confirmedSentence, setConfirmedSentence] = useState<string | null>(null);
+  const [draftSentence, setDraftSentence] = useState('');
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -80,7 +90,13 @@ export function ChildModeClient() {
   };
 
   const removeWord = (index: number) => setMessage((m) => m.filter((_, i) => i !== index));
-  const clearMessage = () => setMessage([]);
+  const clearMessage = () => {
+    setMessage([]);
+    setSuggestions([]);
+    setSuggestNote(null);
+    setConfirmedSentence(null);
+    setDraftSentence('');
+  };
 
   const speakMessage = () => {
     // Speak is only ever enabled after explicit confirmation into the message list,
@@ -89,6 +105,41 @@ export function ChildModeClient() {
     if (!speechEnabled) return;
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const utterance = new SpeechSynthesisUtterance(message.map((p) => p.label).join('. '));
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const fetchSuggestions = async () => {
+    if (message.length === 0) return;
+    setSuggestLoading(true);
+    setSuggestNote(null);
+    setConfirmedSentence(null);
+    // Only the confirmed word labels and the chosen output language are
+    // sent, never camera frames, video, or landmark data.
+    const words = message.map((p) => p.label);
+    const result = await requestSentenceSuggestions(words, textLanguage);
+    setSuggestLoading(false);
+    if (result.ok && result.suggestions.length > 0) {
+      setSuggestions(result.suggestions);
+    } else {
+      setSuggestions([]);
+      setSuggestNote(result.message ?? 'No suggestions available right now.');
+    }
+  };
+
+  const pickSuggestion = (text: string) => {
+    setDraftSentence(text);
+  };
+
+  const confirmSentence = () => {
+    if (!draftSentence.trim()) return;
+    setConfirmedSentence(draftSentence.trim());
+  };
+
+  const speakConfirmedSentence = () => {
+    if (!confirmedSentence) return;
+    if (!speechEnabled) return;
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const utterance = new SpeechSynthesisUtterance(confirmedSentence);
     window.speechSynthesis.speak(utterance);
   };
 
@@ -271,6 +322,89 @@ export function ChildModeClient() {
                 Clear
               </Button>
             </div>
+          </div>
+        )}
+
+        {message.length > 0 && (
+          <div className="mt-4 border-t border-[var(--color-border)] pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-[var(--color-text)]">
+                Need a full sentence?
+              </p>
+              <Button
+                size="md"
+                variant="secondary"
+                onClick={fetchSuggestions}
+                disabled={suggestLoading}
+              >
+                <Wand2 size={16} aria-hidden="true" />
+                {suggestLoading ? 'Thinking...' : 'Suggest a sentence'}
+              </Button>
+            </div>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              This is optional and works only if the backend is running. Suggestions are
+              AI-generated ideas, not verified ISL translations, always review and edit before
+              using them.
+            </p>
+
+            {suggestNote && (
+              <div className="mt-2">
+                <StatusMessage kind="info">{suggestNote}</StatusMessage>
+              </div>
+            )}
+
+            {suggestions.length > 0 && (
+              <div className="mt-3 flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+                  AI-generated suggestions, pick one to edit
+                </span>
+                {suggestions.map((text, i) => (
+                  <button
+                    key={i}
+                    onClick={() => pickSuggestion(text)}
+                    className="min-h-[44px] rounded-[var(--radius-md)] border border-[var(--color-border)] p-3 text-left text-sm text-[var(--color-text)] hover:border-[var(--color-teal-400)]"
+                  >
+                    {text}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {(draftSentence || suggestions.length > 0) && (
+              <div className="mt-3">
+                <label htmlFor="sentence-draft" className="text-xs font-semibold text-[var(--color-text-muted)]">
+                  Edit before using
+                </label>
+                <textarea
+                  id="sentence-draft"
+                  value={draftSentence}
+                  onChange={(e) => setDraftSentence(e.target.value)}
+                  rows={2}
+                  className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm text-[var(--color-text)]"
+                />
+                <div className="mt-2 flex gap-2">
+                  <Button size="md" onClick={confirmSentence} disabled={!draftSentence.trim()}>
+                    Confirm sentence
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {confirmedSentence && (
+              <div className="mt-3 flex flex-wrap items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-surface-muted)] p-3">
+                <span data-testid="confirmed-sentence" className="text-sm text-[var(--color-text)]">
+                  &quot;{confirmedSentence}&quot;
+                </span>
+                <Button
+                  size="md"
+                  onClick={speakConfirmedSentence}
+                  disabled={!speechSupported || !speechEnabled}
+                >
+                  <Volume2 size={16} aria-hidden="true" />
+                  Speak
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </Card>

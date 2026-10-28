@@ -1,14 +1,18 @@
 /**
- * Requesty model priority list (Milestone 4 scaffold).
+ * Requesty model priority list.
  *
  * IMPORTANT: this list is preserved exactly as specified and must not be
  * reordered, renamed, or pruned. It documents the preferred model fallback
- * chain for a FUTURE live integration with https://router.requesty.ai.
+ * chain used by the optional backend's live integration with
+ * https://router.requesty.ai.
  *
- * STATUS: NOT ACTIVE in Milestone 1. No network call in this codebase reads
- * this list at runtime to contact Requesty. See backend/app/suggestions.py
- * for the stub endpoint, which always uses the local curated fallback
- * because no REQUESTY_API_KEY is configured in this environment.
+ * STATUS: the backend (backend/app/suggestions.py) mirrors this exact list
+ * and uses it only when REQUESTY_API_KEY is configured in its environment.
+ * In this repository's default environment, no key is configured, so every
+ * request is served from the local curated fallback and no network call to
+ * Requesty is ever made. This file itself is never read at runtime by the
+ * frontend to contact Requesty, it only documents the chain and is used to
+ * confirm the backend's copy stays in sync.
  */
 export const REQUESTY_MODEL_PRIORITY = [
   'nvidia/nemotron-3-super-120b-a12b',

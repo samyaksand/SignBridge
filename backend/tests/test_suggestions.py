@@ -1,9 +1,23 @@
+import logging
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.suggestions import get_suggestions, is_requesty_configured
+from app.suggestions import (
+    get_suggestions,
+    is_requesty_configured,
+    validate_request,
+    InvalidSuggestionRequest,
+    _is_transient_error,
+    _is_auth_error,
+    _get_model_priority,
+    REQUESTY_MODEL_PRIORITY,
+    MAX_WORDS,
+    MAX_WORD_LENGTH,
+)
 
 
 def test_returns_local_fallback_for_known_word():
@@ -16,10 +30,170 @@ def test_returns_joined_words_for_unknown_input():
     assert result == ["purple elephant"]
 
 
-def test_returns_empty_list_for_no_words():
-    assert get_suggestions([]) == []
-
-
 def test_requesty_not_configured_without_env_key(monkeypatch):
     monkeypatch.delenv("REQUESTY_API_KEY", raising=False)
     assert is_requesty_configured() is False
+
+
+# --- Input validation ---------------------------------------------------
+
+
+def test_rejects_empty_word_list():
+    with pytest.raises(InvalidSuggestionRequest):
+        validate_request([], "en")
+
+
+def test_rejects_oversized_word_list():
+    words = [f"word{i}" for i in range(MAX_WORDS + 1)]
+    with pytest.raises(InvalidSuggestionRequest):
+        validate_request(words, "en")
+
+
+def test_accepts_word_list_at_max_size():
+    words = [f"w{i}" for i in range(MAX_WORDS)]
+    validate_request(words, "en")  # should not raise
+
+
+def test_rejects_unsupported_language():
+    with pytest.raises(InvalidSuggestionRequest):
+        validate_request(["help"], "fr")
+
+
+def test_rejects_empty_string_word():
+    with pytest.raises(InvalidSuggestionRequest):
+        validate_request(["help", "   "], "en")
+
+
+def test_get_suggestions_raises_for_empty_input():
+    with pytest.raises(InvalidSuggestionRequest):
+        get_suggestions([], "en")
+
+
+def test_get_suggestions_raises_for_bad_language():
+    with pytest.raises(InvalidSuggestionRequest):
+        get_suggestions(["help"], "de")
+
+
+def test_rejects_landmark_like_oversized_word():
+    """A word field stuffed with a huge numeric-array-like or base64-looking
+    string must be rejected by validation, the schema should make raw
+    landmark/video data structurally impossible to send through here."""
+    fake_landmark_blob = ",".join(str(i * 0.0001) for i in range(5000))
+    with pytest.raises(InvalidSuggestionRequest):
+        validate_request([fake_landmark_blob], "en")
+
+
+def test_rejects_many_short_landmark_like_fields():
+    """Even if someone tried to split a landmark array across many list
+    entries, the max-word-count limit still rejects it."""
+    fake_coords = [str(i * 0.001) for i in range(5000)]
+    with pytest.raises(InvalidSuggestionRequest):
+        validate_request(fake_coords, "en")
+
+
+# --- Fallback-trigger classification ------------------------------------
+
+
+class _FakeStatusError(Exception):
+    def __init__(self, status_code):
+        super().__init__("fake error")
+        self.status_code = status_code
+
+
+def test_5xx_is_transient():
+    assert _is_transient_error(_FakeStatusError(500)) is True
+    assert _is_transient_error(_FakeStatusError(503)) is True
+
+
+def test_429_rate_limit_is_transient():
+    assert _is_transient_error(_FakeStatusError(429)) is True
+
+
+def test_401_403_are_not_transient():
+    assert _is_transient_error(_FakeStatusError(401)) is False
+    assert _is_transient_error(_FakeStatusError(403)) is False
+
+
+def test_401_403_are_auth_errors():
+    assert _is_auth_error(_FakeStatusError(401)) is True
+    assert _is_auth_error(_FakeStatusError(403)) is True
+
+
+def test_400_is_not_transient_and_not_auth():
+    err = _FakeStatusError(400)
+    assert _is_transient_error(err) is False
+    assert _is_auth_error(err) is False
+
+
+def test_model_unavailable_message_is_transient():
+    assert _is_transient_error(RuntimeError("model not found: foo")) is True
+    assert _is_transient_error(RuntimeError("the requested model is unavailable")) is True
+
+
+def test_generic_value_error_is_not_transient():
+    assert _is_transient_error(ValueError("bad request: missing field")) is False
+
+
+def test_model_priority_list_preserved_verbatim():
+    assert REQUESTY_MODEL_PRIORITY == [
+        "nvidia/nemotron-3-super-120b-a12b",
+        "google/gemma-4-31b-it",
+        "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "novita/ling-3.1-flash",
+        "mistral/leanstral-1-5",
+        "nvidia/muse-glimmer-30b",
+        "novita/inclusionai/ling-3.0-tiny",
+    ]
+
+
+def test_model_priority_bounded(monkeypatch):
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+    order = _get_model_priority()
+    assert len(order) <= 3  # MAX_FALLBACK_ATTEMPTS
+    assert order[0] == REQUESTY_MODEL_PRIORITY[0]
+
+
+def test_model_priority_prefers_configured_model(monkeypatch):
+    monkeypatch.setenv("REQUESTY_MODEL", "google/gemma-4-31b-it")
+    order = _get_model_priority()
+    assert order[0] == "google/gemma-4-31b-it"
+
+
+# --- Sanitized logging ----------------------------------------------------
+
+
+def test_logging_never_includes_confirmed_word_content(caplog):
+    """Running get_suggestions should never leak the actual confirmed word
+    text into log output, only operational metadata."""
+    secret_word = "supersecretmedicalcondition"
+    with caplog.at_level(logging.INFO):
+        get_suggestions([secret_word], "en")
+    for record in caplog.records:
+        assert secret_word not in record.getMessage()
+
+
+def test_logging_never_includes_api_key(monkeypatch, caplog):
+    """Simulates a configured key with the network call itself mocked out
+    (no real HTTP request), and asserts the key text never appears in logs
+    even when the call path logs a failure."""
+    import app.suggestions as suggestions_module
+
+    fake_key = "rqsty-sk-totally-fake-test-key"
+    monkeypatch.setenv("REQUESTY_API_KEY", fake_key)
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    def fake_call_requesty(confirmed_words, output_language):
+        # Simulate every model attempt failing transiently, without any
+        # real network access, then log the way the real path does.
+        suggestions_module.logger.warning(
+            "requesty request failed: transient error, trying fallback model index 1"
+        )
+        return None
+
+    monkeypatch.setattr(suggestions_module, "_call_requesty", fake_call_requesty)
+
+    with caplog.at_level(logging.INFO):
+        get_suggestions(["help"], "en")
+
+    for record in caplog.records:
+        assert fake_key not in record.getMessage()
