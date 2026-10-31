@@ -8,7 +8,11 @@ describe('FamilyPracticeClient', () => {
     const user = userEvent.setup();
     render(<FamilyPracticeClient />);
 
-    await user.click(screen.getByRole('button', { name: 'Start this scenario' }));
+    const scenarioHeading = screen.getByRole('heading', { name: 'I need help' });
+    const scenarioCard = scenarioHeading.closest('div');
+    await user.click(
+      (scenarioCard ?? document.body).querySelector('button') as HTMLElement
+    );
     expect(screen.getByText(/What is happening/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /let's go/i }));
@@ -28,5 +32,54 @@ describe('FamilyPracticeClient', () => {
     await user.click(screen.getByRole('button', { name: /that is right/i }));
 
     expect(screen.getByText(/All done!/i)).toBeInTheDocument();
+  });
+
+  it('lists at least 4 distinct scenarios on the picker screen (regression: used to be only 1)', () => {
+    render(<FamilyPracticeClient />);
+    const startButtons = screen.getAllByRole('button', { name: 'Start this scenario' });
+    expect(startButtons.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('choosing the wrong card shows a try-again note and does not advance or dead-end the flow', async () => {
+    const user = userEvent.setup();
+    render(<FamilyPracticeClient />);
+
+    const scenarioHeading = screen.getByRole('heading', { name: 'I need help' });
+    const scenarioCard = scenarioHeading.closest('div');
+    await user.click((scenarioCard ?? document.body).querySelector('button') as HTMLElement);
+    await user.click(screen.getByRole('button', { name: /let's go/i }));
+    await user.click(screen.getByRole('button', { name: /Ready for the child/i }));
+
+    // Pick a wrong option on purpose.
+    const options = screen.getAllByRole('button', { name: /I need help|I need a break|I need a doctor|Please wait/i });
+    const wrongOption = options.find((o) => !o.textContent?.includes('I need help'));
+    expect(wrongOption).toBeTruthy();
+    await user.click(wrongOption!);
+    await user.click(screen.getByRole('button', { name: 'Confirm choice' }));
+
+    expect(screen.getByText(/Not quite/i)).toBeInTheDocument();
+    // Still on the child-practice step, not stuck or advanced incorrectly.
+    expect(screen.getByText(/For the child/i)).toBeInTheDocument();
+
+    // Now choose correctly and confirm the flow can still complete.
+    const correctOption = screen
+      .getAllByRole('button', { name: /I need help|I need a break|I need a doctor|Please wait/i })
+      .find((o) => o.textContent?.includes('I need help'));
+    await user.click(correctOption!);
+    await user.click(screen.getByRole('button', { name: 'Confirm choice' }));
+    expect(screen.getByText(/Confirm together/i)).toBeInTheDocument();
+  });
+
+  it('Start over returns to the scenario picker from any step', async () => {
+    const user = userEvent.setup();
+    render(<FamilyPracticeClient />);
+
+    const scenarioHeading = screen.getByRole('heading', { name: 'I am sad' });
+    const scenarioCard = scenarioHeading.closest('div');
+    await user.click((scenarioCard ?? document.body).querySelector('button') as HTMLElement);
+    expect(screen.getByText(/What is happening/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Start over/i }));
+    expect(screen.getAllByRole('button', { name: 'Start this scenario' }).length).toBeGreaterThanOrEqual(4);
   });
 });

@@ -29,6 +29,7 @@ export function ChildModeClient() {
   const [message, setMessage] = useState<DemoPrediction[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const pendingTimeoutRef = useRef<number | null>(null);
 
   // Optional sentence suggestions: never requested automatically, only on
   // explicit tap, and never used for speech until the child/parent reviews
@@ -50,17 +51,30 @@ export function ChildModeClient() {
     return () => {
       // Always stop camera tracks when leaving this screen.
       streamRef.current?.getTracks().forEach((track) => track.stop());
+      // Also cancel any pending demo-prediction or confirm timeout so it
+      // never fires a setState after this component has unmounted (e.g.
+      // navigating away mid-capture or right after confirming a word).
+      if (pendingTimeoutRef.current !== null) {
+        window.clearTimeout(pendingTimeoutRef.current);
+        pendingTimeoutRef.current = null;
+      }
     };
   }, []);
 
   const startCamera = async () => {
     setState('loading');
     try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setState('unavailable');
+        setCameraOn(false);
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      // The <video> element only exists in the DOM once cameraOn is true (it is
+      // conditionally rendered below), so videoRef.current is still null here on
+      // the very first start. Flip cameraOn/state first and attach the stream in
+      // the effect below once the element has actually mounted.
       setCameraOn(true);
       setState('ready');
     } catch {
@@ -70,10 +84,21 @@ export function ChildModeClient() {
     }
   };
 
+  // Attach the active stream to the <video> element once it exists in the DOM.
+  // Needed both for the initial start (video mounts only after cameraOn flips
+  // true) and to stay attached across re-renders.
+  useEffect(() => {
+    if (cameraOn && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [cameraOn]);
+
   const runDemoPrediction = () => {
     setState('capturing');
     setChosen(null);
-    window.setTimeout(() => {
+    if (pendingTimeoutRef.current !== null) window.clearTimeout(pendingTimeoutRef.current);
+    pendingTimeoutRef.current = window.setTimeout(() => {
+      pendingTimeoutRef.current = null;
       const set =
         DEMO_PREDICTION_SETS[Math.floor(Math.random() * DEMO_PREDICTION_SETS.length)];
       setPredictions(set);
@@ -86,7 +111,11 @@ export function ChildModeClient() {
     if (!chosen) return;
     setMessage((m) => [...m, chosen]);
     setState('confirmed');
-    window.setTimeout(() => setState(cameraOn ? 'ready' : 'demo'), 1200);
+    if (pendingTimeoutRef.current !== null) window.clearTimeout(pendingTimeoutRef.current);
+    pendingTimeoutRef.current = window.setTimeout(() => {
+      pendingTimeoutRef.current = null;
+      setState(cameraOn ? 'ready' : 'demo');
+    }, 1200);
   };
 
   const removeWord = (index: number) => setMessage((m) => m.filter((_, i) => i !== index));

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Mic, MicOff, RotateCcw, Play, Pause, Maximize, SendHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -9,7 +9,7 @@ import { StatusMessage } from '@/components/ui/StatusMessage';
 import { LazyAvatarStage } from '@/components/avatar/LazyAvatarStage';
 import { QUICK_MESSAGES } from '@/lib/data/quickMessages';
 import cardsData from '@/lib/data/communicationCards.json';
-import { resolveAnimationClip } from '@/lib/data/signAnimationMap';
+import { resolveAnimationClip, SIGN_ANIMATION_MAP } from '@/lib/data/signAnimationMap';
 
 type Lang = 'en' | 'hi';
 type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25;
@@ -23,10 +23,36 @@ interface CardEntry {
 
 const CARDS = cardsData as CardEntry[];
 
+/**
+ * Finds a curated match for typed/spoken text. This checks against the
+ * animation map (frontend/lib/data/signAnimationMap.ts), which is the
+ * actual source of truth for "do we have a demo animation for this
+ * phrase", not communicationCards.json. The two previously fell out of
+ * sync: typing an animation-mapped phrase that was not also a literal
+ * Quick Card (e.g. "I am sorry") always fell through to "not yet
+ * available" even though an animation existed, because the old lookup
+ * only ever searched the cards list. Matching here is case-insensitive and
+ * trims surrounding whitespace.
+ *
+ * When the text also corresponds to a known communication card, that
+ * card's bilingual (en/hi) label is used for the on-screen text below the
+ * avatar; otherwise a lightweight synthetic entry is returned so the
+ * animation can still play for phrases that exist in the animation map but
+ * are not (yet) a Quick Card.
+ */
 function findCuratedMatch(text: string): CardEntry | null {
   const normalized = text.trim().toLowerCase();
   if (!normalized) return null;
-  return CARDS.find((c) => c.en.toLowerCase() === normalized) ?? null;
+
+  const hasAnimation = SIGN_ANIMATION_MAP.some((entry) => entry.label === normalized);
+  if (!hasAnimation) return null;
+
+  const card = CARDS.find((c) => c.en.toLowerCase() === normalized);
+  if (card) return card;
+
+  // Animation-mapped phrase with no matching Quick Card: still a genuine
+  // curated match, just without a Hindi translation to show alongside it.
+  return { id: `anim-${normalized.replace(/\s+/g, '-')}`, category: 'Animation only', en: text.trim(), hi: text.trim() };
 }
 
 export function ParentModeClient() {
@@ -43,6 +69,19 @@ export function ParentModeClient() {
       (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition)
   );
   const recognitionRef = useRef<{ stop: () => void } | null>(null);
+  const avatarContainerRef = useRef<HTMLDivElement>(null);
+  const [fullscreenSupported] = useState(() =>
+    typeof document !== 'undefined' && Boolean(document.documentElement.requestFullscreen)
+  );
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    // Keeps the button's state truthful if the user exits fullscreen via Esc
+    // or a browser chrome control instead of this button.
+    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, []);
 
   const hasDemo = useMemo(() => Boolean(match), [match]);
   const animationEntry = useMemo(
@@ -109,6 +148,24 @@ export function ParentModeClient() {
     setListening(true);
   };
 
+  const handleToggleFullscreen = async () => {
+    if (!fullscreenSupported || !avatarContainerRef.current) return;
+    try {
+      if (!document.fullscreenElement) {
+        await avatarContainerRef.current.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch {
+      // If the browser refuses (e.g. not a user gesture in some edge case),
+      // leave the UI in whatever state it actually ended up in rather than
+      // claiming a mode change that did not happen.
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    }
+  };
+
   return (
     <div
       className="min-h-[calc(100vh-64px)] text-[var(--color-navy-text)]"
@@ -127,7 +184,7 @@ export function ParentModeClient() {
         </div>
 
         <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:gap-10">
-          <div className="flex w-full flex-col items-center gap-4 lg:w-1/2">
+          <div ref={avatarContainerRef} className="flex w-full flex-col items-center gap-4 lg:w-1/2">
             <LazyAvatarStage
               clipName={animationEntry.clipName}
               isPlaying={isPlaying && hasDemo}
@@ -243,10 +300,28 @@ export function ParentModeClient() {
                       <RotateCcw size={16} />
                     </button>
                     <button
-                      disabled
-                      aria-label="Fullscreen is not available for this placeholder demo yet"
-                      title="Fullscreen is not available for this placeholder demo yet"
-                      className="inline-flex h-11 w-11 cursor-not-allowed items-center justify-center rounded-full border border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)] opacity-50"
+                      onClick={handleToggleFullscreen}
+                      disabled={!fullscreenSupported}
+                      aria-label={
+                        fullscreenSupported
+                          ? isFullscreen
+                            ? 'Exit fullscreen'
+                            : 'View avatar fullscreen'
+                          : 'Fullscreen is not supported in this browser'
+                      }
+                      aria-pressed={isFullscreen}
+                      title={
+                        fullscreenSupported
+                          ? isFullscreen
+                            ? 'Exit fullscreen'
+                            : 'View avatar fullscreen'
+                          : 'Fullscreen is not supported in this browser'
+                      }
+                      className={`inline-flex h-11 w-11 items-center justify-center rounded-full border text-[var(--color-navy-text)] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                        isFullscreen
+                          ? 'border-[var(--color-teal-400)] bg-[var(--color-teal-600)]/20'
+                          : 'border-[var(--color-navy-border)]'
+                      }`}
                     >
                       <Maximize size={16} />
                     </button>

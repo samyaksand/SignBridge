@@ -1,10 +1,24 @@
 'use client';
 
 import { Component, Suspense, useEffect, useState, type ReactNode } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { AvatarModel } from './AvatarModel';
 import { AvatarPanel } from '@/components/AvatarPanel';
 import { isWebglSupported } from './WebglSupport';
+
+/**
+ * Points the camera at the avatar's vertical center (roughly chest height)
+ * instead of relying on @react-three/fiber's default look-at-origin, which
+ * looks at the model's feet and crops the head out of frame for a
+ * human-sized figure standing on the ground plane.
+ */
+function CameraAim() {
+  const { camera } = useThree();
+  useEffect(() => {
+    camera.lookAt(0, 0.75, 0);
+  }, [camera]);
+  return null;
+}
 
 const AVATAR_MODEL_URL = '/avatars/cesium-man.glb';
 
@@ -83,7 +97,7 @@ export function AvatarStage({ clipName, isPlaying, speed, hasDemo }: AvatarStage
       <AvatarErrorBoundary onError={() => setFailed(true)}>
         <Suspense fallback={<AvatarLoadingFallback />}>
           <Canvas
-            camera={{ position: [0, 1.4, 2.6], fov: 40 }}
+            camera={{ position: [0, 0.75, 2.8], fov: 40 }}
             dpr={[1, 2]}
             onCreated={({ gl }) => {
               gl.domElement.addEventListener(
@@ -96,6 +110,7 @@ export function AvatarStage({ clipName, isPlaying, speed, hasDemo }: AvatarStage
               );
             }}
           >
+            <CameraAim />
             <hemisphereLight args={[0xffffff, 0x444466, 1.1]} />
             <directionalLight position={[2, 4, 3]} intensity={1.2} />
             <directionalLight position={[-3, 2, -2]} intensity={0.4} />

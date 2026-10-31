@@ -40,6 +40,50 @@ describe('ChildModeClient', () => {
     expect(screen.getAllByText(/Quick Cards/i).length).toBeGreaterThan(0);
   });
 
+  it('stops all camera tracks when the camera is explicitly turned off', async () => {
+    const user = userEvent.setup();
+    const stop = vi.fn();
+    const fakeTrack = { stop };
+    const fakeStream = { getTracks: () => [fakeTrack, fakeTrack] } as unknown as MediaStream;
+    const getUserMedia = vi.fn().mockResolvedValue(fakeStream);
+    Object.defineProperty(window.navigator, 'mediaDevices', {
+      value: { getUserMedia },
+      configurable: true,
+    });
+
+    renderChildMode();
+    await user.click(screen.getByRole('button', { name: /Start Camera/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Stop Camera/i })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: /Stop Camera/i }));
+    expect(stop).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole('button', { name: /Start Camera/i })).toBeInTheDocument();
+  });
+
+  it('stops all camera tracks on unmount even if Stop Camera was never clicked', async () => {
+    const user = userEvent.setup();
+    const stop = vi.fn();
+    const fakeTrack = { stop };
+    const fakeStream = { getTracks: () => [fakeTrack] } as unknown as MediaStream;
+    const getUserMedia = vi.fn().mockResolvedValue(fakeStream);
+    Object.defineProperty(window.navigator, 'mediaDevices', {
+      value: { getUserMedia },
+      configurable: true,
+    });
+
+    const { unmount } = renderChildMode();
+    await user.click(screen.getByRole('button', { name: /Start Camera/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Stop Camera/i })).toBeInTheDocument();
+    });
+
+    expect(stop).not.toHaveBeenCalled();
+    unmount();
+    expect(stop).toHaveBeenCalledTimes(1);
+  });
+
   it('only enables Speak after a prediction has been confirmed into the message', async () => {
     renderChildMode();
     // Initially no message, no speak button present

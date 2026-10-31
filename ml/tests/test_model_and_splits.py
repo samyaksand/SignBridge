@@ -81,6 +81,69 @@ def test_split_dataset_rejects_empty():
         split_dataset([])
 
 
+def test_split_dataset_rejects_fractions_summing_above_one():
+    samples = [Sample(clip_id=f"c{i}", label="x", signer_id=f"s{i}") for i in range(5)]
+    with pytest.raises(ValueError):
+        split_dataset(samples, train_frac=0.8, val_frac=0.5)
+
+
+def test_split_dataset_partial_signer_metadata_falls_back_honestly():
+    """If even one sample is missing a signer_id, the whole split must fall
+    back to the honest clip-level split and report it, it must not
+    silently treat the samples that do have a signer_id as sufficient for
+    a signer-independent split."""
+    samples = [Sample(clip_id=f"c{i}", label="x", signer_id=f"signer_{i % 3}") for i in range(9)]
+    samples.append(Sample(clip_id="c9", label="x", signer_id=None))
+    result = split_dataset(samples, seed=1)
+    assert result["signer_independent"] is False
+    assert len(result["warnings"]) == 1
+    assert "signer" in result["warnings"][0].lower()
+
+
+def test_split_dataset_all_samples_present_exactly_once_across_splits():
+    """No sample should be dropped or duplicated across train/val/test,
+    whichever split strategy was used."""
+    samples = [Sample(clip_id=f"c{i}", label="x", signer_id=f"signer_{i % 6}") for i in range(30)]
+    result = split_dataset(samples, seed=7)
+    all_ids = (
+        [s.clip_id for s in result["train"]]
+        + [s.clip_id for s in result["val"]]
+        + [s.clip_id for s in result["test"]]
+    )
+    assert sorted(all_ids) == sorted(s.clip_id for s in samples)
+    assert len(all_ids) == len(set(all_ids))
+
+
+def test_flatten_frame_zero_fills_entirely_empty_frame():
+    """A frame dict with no keys at all (e.g. a dropped/corrupt frame read)
+    must still zero-fill to the correct fixed feature dimension rather than
+    raising a KeyError."""
+    vec = flatten_frame({})
+    assert vec.shape == (FEATURE_DIM,)
+    assert np.allclose(vec, 0.0)
+
+
+def test_augmentation_on_minimal_two_frame_sequence_preserves_shape():
+    """Time-jitter augmentation divides by (frames - 1) internally when
+    resampling; a minimal 2-frame sequence is the smallest non-degenerate
+    case and must not crash or change shape."""
+    rng = np.random.default_rng(1)
+    seq = np.ones((2, 44, 3), dtype=np.float32)
+    augmented = augment_sequence(seq, rng)
+    assert augmented.shape == seq.shape
+    assert np.all(np.isfinite(augmented))
+
+
+def test_augmentation_output_is_always_finite_across_many_seeds():
+    """Across a spread of random seeds, augmented output must never contain
+    NaN or inf, this would otherwise silently corrupt training batches."""
+    seq = np.random.default_rng(0).normal(size=(32, 44, 3)).astype(np.float32)
+    for seed in range(20):
+        rng = np.random.default_rng(seed)
+        augmented = augment_sequence(seq, rng)
+        assert np.all(np.isfinite(augmented)), f"non-finite output at seed {seed}"
+
+
 def test_augmentation_preserves_shape():
     rng = np.random.default_rng(0)
     seq = rng.normal(size=(32, 44, 3)).astype(np.float32)

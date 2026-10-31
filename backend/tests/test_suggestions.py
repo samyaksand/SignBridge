@@ -172,6 +172,172 @@ def test_logging_never_includes_confirmed_word_content(caplog):
         assert secret_word not in record.getMessage()
 
 
+class _FakeMessage:
+    def __init__(self, content):
+        self.content = content
+
+
+class _FakeChoice:
+    def __init__(self, content):
+        self.message = _FakeMessage(content)
+
+
+class _FakeResponse:
+    def __init__(self, content):
+        self.choices = [_FakeChoice(content)]
+
+
+class _FakeChatCompletions:
+    def __init__(self, responses_or_exceptions):
+        # A list consumed in order, one entry per call to .create(...).
+        self._queue = list(responses_or_exceptions)
+
+    def create(self, **kwargs):
+        item = self._queue.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+
+class _FakeChat:
+    def __init__(self, completions):
+        self.completions = completions
+
+
+class _FakeOpenAIClient:
+    def __init__(self, responses_or_exceptions, **kwargs):
+        self.chat = _FakeChat(_FakeChatCompletions(responses_or_exceptions))
+
+
+def test_call_requesty_returns_lines_on_mocked_success(monkeypatch):
+    """Mocks the OpenAI SDK client entirely, no real network call. Verifies
+    the happy path parses a successful provider response into a list of
+    suggestion lines."""
+    import app.suggestions as suggestions_module
+
+    monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    fake_client = _FakeOpenAIClient([_FakeResponse("I need help\nPlease help me")])
+    monkeypatch.setattr(
+        suggestions_module,
+        "OpenAI",
+        lambda **kwargs: fake_client,
+        raising=False,
+    )
+    # _call_requesty imports OpenAI lazily inside the function body, so patch
+    # the module that import resolves to instead.
+    import openai as openai_module
+
+    monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
+
+    result = suggestions_module._call_requesty(["help"], "en")
+    assert result == ["I need help", "Please help me"]
+
+
+def test_call_requesty_cycles_on_transient_then_succeeds(monkeypatch):
+    """First model attempt raises a transient (5xx-like) error, second
+    attempt in the priority list succeeds. Confirms fallback cycling works
+    against a fully mocked client, no real HTTP call."""
+    import app.suggestions as suggestions_module
+
+    monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    class _TransientError(Exception):
+        status_code = 503
+
+    fake_client = _FakeOpenAIClient([_TransientError("server busy"), _FakeResponse("Thank you so much")])
+    import openai as openai_module
+
+    monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
+
+    result = suggestions_module._call_requesty(["thank you"], "en")
+    assert result == ["Thank you so much"]
+
+
+def test_call_requesty_raises_auth_error_immediately_without_cycling(monkeypatch):
+    """A 401 on the first attempt must raise RequestyAuthError right away,
+    it must never be swallowed into a fallback or retried against the next
+    model in the priority list."""
+    import app.suggestions as suggestions_module
+
+    monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    class _AuthError(Exception):
+        status_code = 401
+
+    # Only one item queued: if the code tried to cycle to a second model,
+    # popping from an empty queue would raise IndexError instead of
+    # RequestyAuthError, so this also proves no retry happened.
+    fake_client = _FakeOpenAIClient([_AuthError("bad key")])
+    import openai as openai_module
+
+    monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
+
+    with pytest.raises(suggestions_module.RequestyAuthError):
+        suggestions_module._call_requesty(["help"], "en")
+
+
+def test_call_requesty_returns_none_when_response_has_empty_content(monkeypatch):
+    """A malformed/empty provider response (no usable text) must not crash,
+    it should be treated as a failed attempt so the caller falls back."""
+    import app.suggestions as suggestions_module
+
+    monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    fake_client = _FakeOpenAIClient([_FakeResponse(""), _FakeResponse(None), _FakeResponse("   ")])
+    import openai as openai_module
+
+    monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
+
+    result = suggestions_module._call_requesty(["help"], "en")
+    assert result is None
+
+
+def test_get_suggestions_falls_back_locally_when_requesty_exhausts_transient_failures(monkeypatch):
+    """End-to-end: with a key configured but every provider attempt failing
+    transiently (mocked), get_suggestions must still return the local
+    curated fallback rather than raising or returning nothing."""
+    import app.suggestions as suggestions_module
+
+    monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    class _TransientError(Exception):
+        status_code = 500
+
+    fake_client = _FakeOpenAIClient([_TransientError("x"), _TransientError("x"), _TransientError("x")])
+    import openai as openai_module
+
+    monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
+
+    result = suggestions_module.get_suggestions(["help"], "en")
+    assert "I need help" in result
+
+
+def test_call_requesty_timeout_is_treated_as_transient(monkeypatch):
+    """A request timeout from the SDK must be classified as transient
+    (cycles to the next model) rather than surfacing as a hard failure."""
+    import app.suggestions as suggestions_module
+    from openai import APITimeoutError
+
+    monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    timeout_exc = APITimeoutError(request=None)
+    fake_client = _FakeOpenAIClient([timeout_exc, _FakeResponse("I need water")])
+    import openai as openai_module
+
+    monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
+
+    result = suggestions_module._call_requesty(["water"], "en")
+    assert result == ["I need water"]
+    assert suggestions_module._is_transient_error(timeout_exc) is True
+
+
 def test_logging_never_includes_api_key(monkeypatch, caplog):
     """Simulates a configured key with the network call itself mocked out
     (no real HTTP request), and asserts the key text never appears in logs

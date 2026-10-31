@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import cards from '@/lib/data/communicationCards.json';
 
 interface CardEntry {
@@ -46,5 +48,21 @@ describe('communication card data integrity', () => {
       expect(card.illustration).toBeTruthy();
       expect(card.verificationStatus).toBe('unverified-placeholder');
     }
+  });
+
+  it('every illustration path resolves to a real file under frontend/public', () => {
+    // card.illustration is an absolute-from-public path like
+    // "/images/cards/basic-01.svg", as served by Next.js static assets.
+    const publicDir = join(__dirname, '..', 'public');
+    for (const card of CARDS) {
+      expect(card.illustration.startsWith('/')).toBe(true);
+      const resolved = join(publicDir, card.illustration);
+      expect(existsSync(resolved)).toBe(true);
+    }
+  });
+
+  it('every card id is used by exactly one illustration file (no accidental sharing)', () => {
+    const illustrations = CARDS.map((c) => c.illustration);
+    expect(new Set(illustrations).size).toBe(illustrations.length);
   });
 });

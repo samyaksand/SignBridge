@@ -71,7 +71,10 @@ uvicorn app.main:app --reload
 ```
 
 Then it's available at http://localhost:8000. The frontend works completely
-without this.
+without this. The backend's real dependencies are FastAPI, Uvicorn,
+Pydantic, and the OpenAI Python SDK (used to call Requesty's
+OpenAI-compatible router), plus pytest and httpx for its own test suite,
+see `backend/requirements.txt` for exact version floors.
 
 ## Running tests
 
@@ -81,16 +84,29 @@ Frontend tests (Vitest + React Testing Library), from `frontend/`:
 npm run test
 ```
 
-Python tests (normalization + backend logic), from the project root:
+Python tests (ML pipeline + backend logic), from the project root:
 
 ```
 python -m pytest ml/tests backend/tests -v
 ```
 
-Or run everything from the root in one go:
+Or run everything (frontend, then Python) from the root in one go:
 
 ```
 npm run test
+```
+
+Lint and type-check, from `frontend/`:
+
+```
+npm run lint
+npx tsc --noEmit
+```
+
+Production build, from `frontend/`:
+
+```
+npm run build
 ```
 
 See `docs/TESTING.md` for exactly what is covered and the real results from
@@ -106,29 +122,38 @@ npm run build
 ## Project layout
 
 ```
-frontend/   The whole product. Next.js, TypeScript, Tailwind CSS.
-backend/    Optional FastAPI stub for a future AI-suggestion feature.
-ml/         Scaffolding for a future trained sign-recognition model.
+frontend/   The whole product. Next.js, TypeScript, Tailwind CSS, Three.js avatar stage.
+backend/    Optional FastAPI backend with a real, optional Requesty AI integration.
+ml/         Real, tested ML pipeline code (normalization, model, splits, ONNX export), not yet trained on real data.
 docs/       Architecture, dataset notes, privacy, model status, testing.
 scripts/    Small helper scripts used by the root `npm run dev` command.
 ```
 
-## What's scaffolded but not active yet
+## Completed vs experimental vs not implemented
 
-- **A trained sign-recognition model.** `ml/` has normalization code and a
-  word list, but no dataset has been downloaded and no model has been
-  trained. Full details and next steps: `docs/MODEL_CARD.md`.
-- **Live Requesty AI suggestions.** `frontend/lib/config/requestyModels.ts`
-  and `backend/app/suggestions.py` are ready to go, but no API key is
-  configured, so the backend always uses a local, curated fallback. No live
-  network calls are made to Requesty in this build.
-- **A 3D or licensed avatar.** Parent Mode shows a polished animated
-  placeholder avatar instead, clearly labeled as "coming soon."
+An honest, at-a-glance summary of what is real, what is a working but
+unverified scaffold, and what has not been built. See the linked docs for
+full detail; this table is the short version.
 
-If Milestone 4 (live Requesty calls) is turned on later with a real API
-key, normal LLM API usage costs would apply, based on whichever model from
-the priority list actually serves each request. No cost is incurred by this
-build, since no key is present and no call is made.
+| Area | Status | Detail |
+|---|---|---|
+| Parent Mode, Child Mode, Family Practice, Quick Cards UI | **Completed** | Full state machines, confirm-before-speak gating, accessible roles/labels, all tested. |
+| Communication Preferences (mode, text size, reduced motion, speech toggle) | **Completed** | Session-only except text size (localStorage), wired to real CSS attributes and gating real Speak calls. |
+| Theme (light/dark) + AmbientBackground | **Completed** | Persisted theme, reduced-motion-aware ambient animation. |
+| Sign-recognition in Child Mode | **Experimental demo, not real** | Fixed sample predictions, not a trained model. Clearly labeled "Demo mode" everywhere. |
+| Three.js avatar stage | **Experimental** | Real CC-BY-4.0 Khronos `CesiumMan.glb` model, lazy-loaded, with an honest SVG fallback when WebGL is unavailable. No ISL-specific animation exists: `signAnimationMap.ts` marks every entry `verifiedIsl: false`. |
+| ML pipeline code (normalization, augmentation, GRU model, signer-independent splits, ONNX export) | **Experimental, code-complete, untrained** | Real, tested code. Runs only on synthetic smoke-test data so far, see `docs/MODEL_CARD.md`. No real model has been trained. |
+| INCLUDE dataset integration | **Not implemented** | Dataset researched and documented honestly (`docs/DATASET.md`), 56.8 GB never downloaded in this environment. |
+| Requesty AI sentence suggestions (backend) | **Completed, optional, off by default** | Real OpenAI-SDK-based client, exact model priority list, bounded retries on transient errors only, auth errors surface immediately. Fully inactive without a user-supplied `REQUESTY_API_KEY`. |
+| Offline support / service worker | **Not implemented** | No service worker exists. The app requires network access to load its JS/assets, documented honestly in `docs/PRIVACY.md`. |
+| Accounts, analytics, ads | **Not implemented, by design** | None exist anywhere in the app. |
+
+If Requesty's live calls are turned on later with your own real API key,
+normal third-party LLM API usage costs would apply, based on whichever
+model from the priority list actually serves each request, and billed by
+Requesty/the underlying model providers, not by this project. No cost is
+incurred by the default build, since no key is present and no network call
+to Requesty is ever made.
 
 ## Dataset and model training overview
 

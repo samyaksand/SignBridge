@@ -42,10 +42,14 @@ document is the source of truth.
   `labels.json`, and checks ONNX Runtime output against PyTorch output
   (max abs diff well under the 1e-4 tolerance in the last real run, see
   `ml/artifacts/smoke_test/onnx_parity_result.json`).
-- `ml/tests/`: 17 passing pytest tests (`python -m pytest ml/tests -v`)
-  covering normalization, the model, splits, augmentation, the full
-  synthetic training smoke test, ONNX export/parity, and the synthetic
-  MediaPipe extraction smoke test.
+- `ml/tests/`: 30 passing pytest tests (`python -m pytest ml/tests -v`)
+  covering normalization (including edge cases: missing shoulders, missing
+  hands, zero shoulder width, NaN coordinates, empty clips, single-frame
+  clips), the model, splits (including partial signer metadata and
+  split-integrity checks), augmentation (including minimal 2-frame
+  sequences and finiteness across many seeds), the full synthetic training
+  smoke test, ONNX export/parity, and the synthetic MediaPipe extraction
+  smoke test. See `docs/TESTING.md` for the full breakdown.
 
 **None of the above constitutes a trained model on real data.** All
 numbers from `train_smoke_test.py` and `export_onnx_smoke_test.py` are
