@@ -1,121 +1,57 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Mic, MicOff, RotateCcw, Play, Pause, Maximize, SendHorizontal } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Mic, MicOff, Search, SendHorizontal, BookmarkPlus, BookmarkCheck, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { StatusMessage } from '@/components/ui/StatusMessage';
-import { LazyAvatarStage } from '@/components/avatar/LazyAvatarStage';
+import { SignVideo } from '@/components/isl/SignVideo';
+import { SignCard } from '@/components/isl/SignCard';
 import { QUICK_MESSAGES } from '@/lib/data/quickMessages';
-import cardsData from '@/lib/data/communicationCards.json';
-import { resolveAnimationClip, SIGN_ANIMATION_MAP } from '@/lib/data/signAnimationMap';
+import { usePracticeList } from '@/lib/context/PracticeListContext';
+import { useSignSearch } from '@/lib/hooks/useSignSearch';
+import type { IslSign } from '@/lib/data/islSigns';
 
 type Lang = 'en' | 'hi';
-type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25;
-
-interface CardEntry {
-  id: string;
-  category: string;
-  en: string;
-  hi: string;
-}
-
-const CARDS = cardsData as CardEntry[];
 
 /**
- * Finds a curated match for typed/spoken text. This checks against the
- * animation map (frontend/lib/data/signAnimationMap.ts), which is the
- * actual source of truth for "do we have a demo animation for this
- * phrase", not communicationCards.json. The two previously fell out of
- * sync: typing an animation-mapped phrase that was not also a literal
- * Quick Card (e.g. "I am sorry") always fell through to "not yet
- * available" even though an animation existed, because the old lookup
- * only ever searched the cards list. Matching here is case-insensitive and
- * trims surrounding whitespace.
+ * Parent Mode no longer renders a 3D avatar. The previous CesiumMan-based
+ * avatar had no finger bones and could only play simplified body gestures
+ * labeled verifiedIsl:false everywhere; it was never a real ISL
+ * demonstration and has been removed from this screen entirely (the
+ * component files themselves are untouched, see
+ * frontend/components/avatar/, they are simply no longer imported here).
  *
- * When the text also corresponds to a known communication card, that
- * card's bilingual (en/hi) label is used for the on-screen text below the
- * avatar; otherwise a lightweight synthetic entry is returned so the
- * animation can still play for phrases that exist in the animation map but
- * are not (yet) a Quick Card.
+ * This screen is now built around SignBridge's verified ISL reference
+ * video library (frontend/lib/data/islSigns.ts). It does not claim to
+ * translate arbitrary English or Hindi text into ISL: that capability
+ * never existed honestly. It lets a parent search the same verified
+ * library used in Explore Signs, watch the real reference videos, and
+ * build a simple message out of supported signs.
  */
-function findCuratedMatch(text: string): CardEntry | null {
-  const normalized = text.trim().toLowerCase();
-  if (!normalized) return null;
-
-  const hasAnimation = SIGN_ANIMATION_MAP.some((entry) => entry.label === normalized);
-  if (!hasAnimation) return null;
-
-  const card = CARDS.find((c) => c.en.toLowerCase() === normalized);
-  if (card) return card;
-
-  // Animation-mapped phrase with no matching Quick Card: still a genuine
-  // curated match, just without a Hindi translation to show alongside it.
-  return { id: `anim-${normalized.replace(/\s+/g, '-')}`, category: 'Animation only', en: text.trim(), hi: text.trim() };
-}
-
 export function ParentModeClient() {
-  const [text, setText] = useState('');
   const [lang, setLang] = useState<Lang>('en');
-  const [submitted, setSubmitted] = useState('');
-  const [match, setMatch] = useState<CardEntry | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState<PlaybackSpeed>(1);
+  const [messageSigns, setMessageSigns] = useState<IslSign[]>([]);
   const [listening, setListening] = useState(false);
+  const { query, setQuery, category, setCategory, categories, results } = useSignSearch();
+  const { practiceList, addToPracticeList, removeFromPracticeList, isInPracticeList } =
+    usePracticeList();
+
   const [speechSupported] = useState(() =>
     typeof window !== 'undefined' &&
-    Boolean((window as unknown as { webkitSpeechRecognition?: unknown; SpeechRecognition?: unknown }).webkitSpeechRecognition ||
-      (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition)
-  );
-  const recognitionRef = useRef<{ stop: () => void } | null>(null);
-  const avatarContainerRef = useRef<HTMLDivElement>(null);
-  const [fullscreenSupported] = useState(() =>
-    typeof document !== 'undefined' && Boolean(document.documentElement.requestFullscreen)
-  );
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  useEffect(() => {
-    // Keeps the button's state truthful if the user exits fullscreen via Esc
-    // or a browser chrome control instead of this button.
-    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener('fullscreenchange', onChange);
-    return () => document.removeEventListener('fullscreenchange', onChange);
-  }, []);
-
-  const hasDemo = useMemo(() => Boolean(match), [match]);
-  const animationEntry = useMemo(
-    () => (match ? resolveAnimationClip(match.en) : resolveAnimationClip('')),
-    [match]
+    Boolean(
+      (window as unknown as { webkitSpeechRecognition?: unknown; SpeechRecognition?: unknown })
+        .webkitSpeechRecognition ||
+        (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition
+    )
   );
 
-  const handleShow = () => {
-    setSubmitted(text);
-    setMatch(findCuratedMatch(text));
-    setIsPlaying(false);
-  };
-
-  const handleQuickMessage = (en: string) => {
-    setText(en);
-    setSubmitted(en);
-    setMatch(findCuratedMatch(en));
-    setIsPlaying(false);
-  };
-
-  const handleClear = () => {
-    setText('');
-    setSubmitted('');
-    setMatch(null);
-    setIsPlaying(false);
-  };
+  const messageText = useMemo(() => messageSigns.map((s) => s.title).join(', '), [messageSigns]);
 
   const handleMic = () => {
     if (!speechSupported) return;
-    if (listening) {
-      recognitionRef.current?.stop();
-      setListening(false);
-      return;
-    }
     interface SpeechRecognitionResultLike {
       results?: { [index: number]: { [index: number]: { transcript: string } } };
     }
@@ -140,30 +76,30 @@ export function ParentModeClient() {
     recognition.interimResults = false;
     recognition.onresult = (event: SpeechRecognitionResultLike) => {
       const transcript = event.results?.[0]?.[0]?.transcript ?? '';
-      setText(transcript);
+      setQuery(transcript);
     };
     recognition.onend = () => setListening(false);
-    recognitionRef.current = recognition;
     recognition.start();
     setListening(true);
   };
 
-  const handleToggleFullscreen = async () => {
-    if (!fullscreenSupported || !avatarContainerRef.current) return;
-    try {
-      if (!document.fullscreenElement) {
-        await avatarContainerRef.current.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    } catch {
-      // If the browser refuses (e.g. not a user gesture in some edge case),
-      // leave the UI in whatever state it actually ended up in rather than
-      // claiming a mode change that did not happen.
-      setIsFullscreen(Boolean(document.fullscreenElement));
-    }
+  const addToMessage = (sign: IslSign) => {
+    setMessageSigns((list) => (list.some((s) => s.id === sign.id) ? list : [...list, sign]));
+  };
+  const removeFromMessage = (id: string) => {
+    setMessageSigns((list) => list.filter((s) => s.id !== id));
+  };
+  const clearMessage = () => setMessageSigns([]);
+
+  const speakMessage = () => {
+    // Speech only ever fires after this explicit button press on a
+    // message the parent themselves assembled and can see in full,
+    // never automatically and never on unconfirmed text.
+    if (messageSigns.length === 0) return;
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const utterance = new SpeechSynthesisUtterance(messageText);
+    utterance.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
+    window.speechSynthesis.speak(utterance);
   };
 
   return (
@@ -174,188 +110,218 @@ export function ParentModeClient() {
           'radial-gradient(60rem 40rem at 15% -10%, rgba(81,70,224,0.16), transparent 55%), radial-gradient(50rem 36rem at 100% 10%, rgba(21,144,153,0.12), transparent 55%), var(--color-navy-950)',
       }}
     >
-      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-10 sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6">
         <div>
           <h1 className="text-2xl font-semibold sm:text-3xl">Parent Mode</h1>
           <p className="mt-2 max-w-2xl text-sm text-[var(--color-navy-text-muted)]">
-            Type or speak what you want to say. If it matches one of our practiced phrases,
-            we will show a reference sign demonstration below.
+            Search our verified ISL reference videos, watch the real demonstration, and build a
+            message from the signs we actually have. SignBridge does not translate arbitrary
+            text into ISL. For a word we do not have yet, try{' '}
+            <Link href="/cards" className="underline">
+              Quick Cards
+            </Link>{' '}
+            or{' '}
+            <Link href="/explore" className="underline">
+              Explore Signs
+            </Link>
+            .
           </p>
         </div>
 
-        <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:gap-10">
-          <div ref={avatarContainerRef} className="flex w-full flex-col items-center gap-4 lg:w-1/2">
-            <LazyAvatarStage
-              clipName={animationEntry.clipName}
-              isPlaying={isPlaying && hasDemo}
-              speed={speed}
-              hasDemo={hasDemo}
-            />
-            {submitted && (
-              <p className="text-center text-lg font-medium" aria-live="polite">
-                {lang === 'hi' && match ? match.hi : submitted}
-              </p>
-            )}
-          </div>
+        <div className="flex gap-2" role="radiogroup" aria-label="Choose language">
+          {(['en', 'hi'] as Lang[]).map((l) => (
+            <button
+              key={l}
+              role="radio"
+              aria-checked={lang === l}
+              onClick={() => setLang(l)}
+              className={`min-h-[44px] rounded-[var(--radius-md)] px-4 text-sm font-medium transition-colors ${
+                lang === l
+                  ? 'bg-[var(--color-indigo-500)] text-white'
+                  : 'border border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)] hover:border-[var(--color-indigo-400)]'
+              }`}
+            >
+              {l === 'en' ? 'English' : 'हिन्दी'}
+            </button>
+          ))}
+        </div>
 
-          <div className="w-full lg:w-1/2">
-            <Card className="border-[var(--color-navy-border)] bg-[var(--color-navy-800)] p-5 text-[var(--color-navy-text)]">
-              <div className="flex flex-col gap-4">
-                <div className="flex gap-2" role="radiogroup" aria-label="Choose language">
-                  {(['en', 'hi'] as Lang[]).map((l) => (
-                    <button
-                      key={l}
-                      role="radio"
-                      aria-checked={lang === l}
-                      onClick={() => setLang(l)}
-                      className={`min-h-[44px] rounded-[var(--radius-md)] px-4 text-sm font-medium transition-colors ${
-                        lang === l
-                          ? 'bg-[var(--color-indigo-500)] text-white'
-                          : 'border border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)] hover:border-[var(--color-indigo-400)]'
-                      }`}
-                    >
-                      {l === 'en' ? 'English' : 'हिन्दी'}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex gap-2">
-                  <Input
-                    aria-label="Message to show in ISL"
-                    placeholder="Type your message..."
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    className="border-[var(--color-navy-border)] bg-[var(--color-navy-900)] text-[var(--color-navy-text)] placeholder:text-[var(--color-navy-text-muted)]"
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr_1fr]">
+          <div className="flex flex-col gap-4">
+            <Card className="border-[var(--color-navy-border)] bg-[var(--color-navy-800)] p-5">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search
+                    aria-hidden="true"
+                    size={18}
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-navy-text-muted)]"
                   />
+                  <Input
+                    aria-label="Search the verified sign library"
+                    placeholder="Search signs, e.g. greetings, conversation..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="border-[var(--color-navy-border)] bg-[var(--color-navy-900)] pl-9 text-[var(--color-navy-text)] placeholder:text-[var(--color-navy-text-muted)]"
+                  />
+                </div>
+                <button
+                  onClick={handleMic}
+                  disabled={!speechSupported}
+                  aria-label={listening ? 'Stop listening' : 'Search by speaking'}
+                  aria-pressed={listening}
+                  className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border text-[var(--color-navy-text)] transition-colors disabled:opacity-40 ${
+                    listening
+                      ? 'border-[var(--color-teal-400)] bg-[var(--color-teal-600)]/20'
+                      : 'border-[var(--color-navy-border)] hover:border-[var(--color-indigo-400)]'
+                  }`}
+                >
+                  {listening ? <MicOff size={18} /> : <Mic size={18} />}
+                </button>
+              </div>
+              {!speechSupported && (
+                <p className="mt-2 text-xs text-[var(--color-navy-text-muted)]">
+                  Speech input is not supported in this browser. You can still type to search.
+                </p>
+              )}
+
+              <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
+                <button
+                  onClick={() => setCategory('all')}
+                  aria-pressed={category === 'all'}
+                  className={`min-h-[36px] rounded-full border px-3 text-xs font-medium capitalize ${
+                    category === 'all'
+                      ? 'border-[var(--color-teal-400)] bg-[var(--color-teal-600)]/30'
+                      : 'border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)]'
+                  }`}
+                >
+                  All
+                </button>
+                {categories.map((c) => (
                   <button
-                    onClick={handleMic}
-                    disabled={!speechSupported}
-                    aria-label={listening ? 'Stop listening' : 'Speak your message'}
-                    aria-pressed={listening}
-                    title={
-                      speechSupported
-                        ? 'Speak your message'
-                        : 'Speech input is not supported in this browser'
-                    }
-                    className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border text-[var(--color-navy-text)] transition-colors disabled:opacity-40 ${
-                      listening
-                        ? 'border-[var(--color-teal-400)] bg-[var(--color-teal-600)]/20'
-                        : 'border-[var(--color-navy-border)] hover:border-[var(--color-indigo-400)]'
+                    key={c}
+                    onClick={() => setCategory(c)}
+                    aria-pressed={category === c}
+                    className={`min-h-[36px] rounded-full border px-3 text-xs font-medium capitalize ${
+                      category === c
+                        ? 'border-[var(--color-teal-400)] bg-[var(--color-teal-600)]/30'
+                        : 'border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)]'
                     }`}
                   >
-                    {listening ? <MicOff size={18} /> : <Mic size={18} />}
+                    {c}
                   </button>
-                </div>
-                {!speechSupported && (
-                  <p className="text-xs text-[var(--color-navy-text-muted)]">
-                    Speech input is not supported in this browser. You can still type your
-                    message.
-                  </p>
-                )}
+                ))}
+              </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {QUICK_MESSAGES.map((qm) => (
-                    <button
-                      key={qm.id}
-                      onClick={() => handleQuickMessage(qm.en)}
-                      className="min-h-[44px] rounded-full border border-[var(--color-navy-border)] px-4 text-sm text-[var(--color-navy-text)] transition-colors hover:bg-[var(--color-navy-700)]"
-                    >
-                      {qm.en}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex gap-2">
-                  <Button onClick={handleShow} className="flex-1" size="lg">
-                    <SendHorizontal size={18} aria-hidden="true" />
-                    Show in ISL
-                  </Button>
-                  <Button variant="secondary" onClick={handleClear} size="lg">
-                    <RotateCcw size={18} aria-hidden="true" />
-                    Clear
-                  </Button>
-                </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {QUICK_MESSAGES.slice(0, 6).map((qm) => (
+                  <button
+                    key={qm.id}
+                    onClick={() => setQuery(qm.en)}
+                    className="min-h-[36px] rounded-full border border-[var(--color-navy-border)] px-3 text-xs text-[var(--color-navy-text)] hover:bg-[var(--color-navy-700)]"
+                  >
+                    {qm.en}
+                  </button>
+                ))}
               </div>
             </Card>
 
-            <Card className="mt-4 border-[var(--color-navy-border)] bg-[var(--color-navy-800)] p-5">
+            {results.length === 0 ? (
+              <StatusMessage kind="empty">
+                No verified signs match that search. Try a different word or category.
+              </StatusMessage>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {results.map((sign) => (
+                  <div key={sign.id} className="flex flex-col gap-2">
+                    <SignCard sign={sign} onSelect={addToMessage} />
+                    <Button
+                      size="md"
+                      variant="secondary"
+                      onClick={() =>
+                        isInPracticeList(sign.id)
+                          ? removeFromPracticeList(sign.id)
+                          : addToPracticeList(sign)
+                      }
+                    >
+                      {isInPracticeList(sign.id) ? (
+                        <>
+                          <BookmarkCheck size={14} aria-hidden="true" /> Saved
+                        </>
+                      ) : (
+                        <>
+                          <BookmarkPlus size={14} aria-hidden="true" /> Save
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <Card className="border-[var(--color-navy-border)] bg-[var(--color-navy-800)] p-5">
               <h2 className="mb-3 text-sm font-semibold text-[var(--color-navy-text)]">
-                Playback
+                Your message
               </h2>
-              {hasDemo ? (
+              {messageSigns.length === 0 ? (
+                <StatusMessage kind="empty">
+                  Tap a sign on the left to add it here. We will show its real reference video.
+                </StatusMessage>
+              ) : (
                 <div className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <button
-                      onClick={() => setIsPlaying((p) => !p)}
-                      aria-label={isPlaying ? 'Pause' : 'Play'}
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-teal-500)] text-white"
-                    >
-                      {isPlaying ? <Pause size={18} /> : <Play size={18} />}
-                    </button>
-                    <button
-                      onClick={() => setIsPlaying(false)}
-                      aria-label="Reset"
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-navy-border)] text-[var(--color-navy-text)]"
-                    >
-                      <RotateCcw size={16} />
-                    </button>
-                    <button
-                      onClick={handleToggleFullscreen}
-                      disabled={!fullscreenSupported}
-                      aria-label={
-                        fullscreenSupported
-                          ? isFullscreen
-                            ? 'Exit fullscreen'
-                            : 'View avatar fullscreen'
-                          : 'Fullscreen is not supported in this browser'
-                      }
-                      aria-pressed={isFullscreen}
-                      title={
-                        fullscreenSupported
-                          ? isFullscreen
-                            ? 'Exit fullscreen'
-                            : 'View avatar fullscreen'
-                          : 'Fullscreen is not supported in this browser'
-                      }
-                      className={`inline-flex h-11 w-11 items-center justify-center rounded-full border text-[var(--color-navy-text)] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                        isFullscreen
-                          ? 'border-[var(--color-teal-400)] bg-[var(--color-teal-600)]/20'
-                          : 'border-[var(--color-navy-border)]'
-                      }`}
-                    >
-                      <Maximize size={16} />
-                    </button>
-                    <div className="ml-auto flex gap-1" role="group" aria-label="Playback speed">
-                      {[0.5, 0.75, 1, 1.25].map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => setSpeed(s as PlaybackSpeed)}
-                          aria-pressed={speed === s}
-                          className={`min-h-[36px] rounded-[var(--radius-sm)] px-2 text-xs font-medium ${
-                            speed === s
-                              ? 'bg-[var(--color-teal-500)] text-white'
-                              : 'border border-[var(--color-navy-border)] text-[var(--color-navy-text-muted)]'
-                          }`}
-                        >
-                          {s}x
-                        </button>
+                  <div className="flex flex-wrap gap-2">
+                    {messageSigns.map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => removeFromMessage(s.id)}
+                        aria-label={`Remove ${s.title}`}
+                        className="inline-flex min-h-[36px] items-center gap-1 rounded-full bg-[var(--color-navy-700)] px-3 text-sm text-[var(--color-navy-text)]"
+                      >
+                        {s.title} <X size={14} aria-hidden="true" />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={speakMessage} size="lg">
+                      <SendHorizontal size={18} aria-hidden="true" />
+                      Speak
+                    </Button>
+                    <Button variant="secondary" onClick={clearMessage} size="lg">
+                      Clear
+                    </Button>
+                  </div>
+                  <div className="border-t border-[var(--color-navy-border)] pt-3">
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-navy-text-muted)]">
+                      Reference videos
+                    </h3>
+                    <div className="flex flex-col gap-4">
+                      {messageSigns.map((s) => (
+                        <SignVideo key={s.id} sign={s} />
                       ))}
                     </div>
                   </div>
-                  <StatusMessage kind="info">
-                    This is a placeholder reference demonstration for &quot;{match?.en}&quot;,
-                    not a professionally verified ISL recording yet. Real licensed sign videos
-                    are planned for a future update.
-                  </StatusMessage>
                 </div>
-              ) : (
-                <StatusMessage kind="warning">
-                  Sign demonstration not yet available for this phrase. SignBridge only has a
-                  small set of practiced phrases so far. Try one of the quick messages above,
-                  or check the Quick Cards page.
-                </StatusMessage>
               )}
             </Card>
+
+            {practiceList.length > 0 && (
+              <Card className="border-[var(--color-navy-border)] bg-[var(--color-navy-800)] p-5">
+                <h2 className="mb-2 text-sm font-semibold text-[var(--color-navy-text)]">
+                  Saved for practice ({practiceList.length})
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {practiceList.map((s) => (
+                    <span
+                      key={s.id}
+                      className="rounded-full bg-[var(--color-navy-700)] px-3 py-1 text-xs text-[var(--color-navy-text)]"
+                    >
+                      {s.title}
+                    </span>
+                  ))}
+                </div>
+              </Card>
+            )}
           </div>
         </div>
       </div>

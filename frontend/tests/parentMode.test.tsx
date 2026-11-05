@@ -1,83 +1,67 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ParentModeClient } from '@/app/parent/ParentModeClient';
+import { PracticeListProvider } from '@/lib/context/PracticeListContext';
+import { ISL_SIGNS } from '@/lib/data/islSigns';
 
-describe('ParentModeClient', () => {
-  it('shows a fallback message for text with no curated demo', async () => {
-    const user = userEvent.setup();
-    render(<ParentModeClient />);
-    const input = screen.getByLabelText('Message to show in ISL');
-    await user.type(input, 'some random sentence nobody has recorded');
-    await user.click(screen.getByRole('button', { name: /Show in ISL/i }));
-    expect(screen.getByText(/Sign demonstration not yet available/i)).toBeInTheDocument();
+function renderParentMode() {
+  return render(
+    <PracticeListProvider>
+      <ParentModeClient />
+    </PracticeListProvider>
+  );
+}
+
+describe('ParentModeClient (verified ISL library, no 3D avatar)', () => {
+  it('never claims to translate arbitrary text into ISL', () => {
+    renderParentMode();
+    expect(screen.getByText(/does not translate arbitrary text into ISL/i)).toBeInTheDocument();
   });
 
-  it('shows a demo reference when text matches a curated phrase via Quick Messages', async () => {
+  it('shows a fallback message for a search with no match', async () => {
     const user = userEvent.setup();
-    render(<ParentModeClient />);
-    await user.click(screen.getByRole('button', { name: 'I need help' }));
-    expect(screen.getByText(/placeholder reference demonstration/i)).toBeInTheDocument();
+    renderParentMode();
+    const input = screen.getByLabelText('Search the verified sign library');
+    await user.type(input, 'zzzznonexistentword');
+    expect(screen.getByText(/No verified signs match that search/i)).toBeInTheDocument();
   });
 
-  it('clear resets the message and playback state', async () => {
+  it('adding a sign to the message renders its real verified video iframe', async () => {
     const user = userEvent.setup();
-    render(<ParentModeClient />);
-    await user.click(screen.getByRole('button', { name: 'I need help' }));
-    await user.click(screen.getByRole('button', { name: /Clear/i }));
-    expect(screen.queryByText(/placeholder reference demonstration/i)).not.toBeInTheDocument();
+    renderParentMode();
+    const firstSign = ISL_SIGNS[0];
+    const signButtons = await screen.findAllByRole('button', { name: new RegExp(firstSign.title, 'i') });
+    await user.click(signButtons[0]);
+
+    const iframe = document.querySelector('iframe') as HTMLIFrameElement | null;
+    expect(iframe).not.toBeNull();
+    expect(iframe?.getAttribute('src')).toContain(firstSign.videoId);
   });
 
-  it('rapidly clicking Play/Pause repeatedly never crashes and ends in a consistent pressed state', async () => {
+  it('clear resets the message', async () => {
     const user = userEvent.setup();
-    render(<ParentModeClient />);
-    await user.click(screen.getByRole('button', { name: 'I need help' }));
-
-    const playButton = screen.getByRole('button', { name: /Play|Pause/i });
-    await user.click(playButton);
-    await user.click(playButton);
-    await user.click(playButton);
-    // After 3 toggles from the (false) resting isPlaying state, it should be
-    // true (false -> true -> false -> true), and importantly nothing threw.
-    expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
+    renderParentMode();
+    const firstSign = ISL_SIGNS[0];
+    const signButtons = await screen.findAllByRole('button', { name: new RegExp(firstSign.title, 'i') });
+    await user.click(signButtons[0]);
+    await user.click(screen.getByRole('button', { name: /^Clear$/i }));
+    expect(screen.queryByRole('button', { name: /^Speak$/i })).not.toBeInTheDocument();
   });
 
-  it('switching Quick Messages rapidly always ends on the last clicked phrase, no stale state', async () => {
+  it('rapid add/remove of the same sign never crashes and leaves a consistent state', async () => {
     const user = userEvent.setup();
-    render(<ParentModeClient />);
-    await user.click(screen.getByRole('button', { name: 'I need help' }));
-    await user.click(screen.getByRole('button', { name: 'Thank you' }));
-    await user.click(screen.getByRole('button', { name: 'I love you' }));
-    const submittedText = document.querySelector('p[aria-live="polite"]');
-    expect(submittedText).toHaveTextContent('I love you');
-  });
-
-  it('the fullscreen button is enabled when supported and toggles aria-pressed without crashing', async () => {
-    const user = userEvent.setup();
-    const requestFullscreen = vi.fn().mockImplementation(function (this: HTMLElement) {
-      Object.defineProperty(document, 'fullscreenElement', { value: this, configurable: true });
-      document.dispatchEvent(new Event('fullscreenchange'));
-      return Promise.resolve();
-    });
-    Object.defineProperty(HTMLElement.prototype, 'requestFullscreen', {
-      value: requestFullscreen,
-      configurable: true,
-    });
-    Object.defineProperty(document, 'exitFullscreen', {
-      value: vi.fn().mockImplementation(() => {
-        Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true });
-        document.dispatchEvent(new Event('fullscreenchange'));
-        return Promise.resolve();
-      }),
-      configurable: true,
-    });
-
-    render(<ParentModeClient />);
-    await user.click(screen.getByRole('button', { name: 'I need help' }));
-
-    const fullscreenButton = screen.getByRole('button', { name: /View avatar fullscreen/i });
-    expect(fullscreenButton).not.toBeDisabled();
-    await user.click(fullscreenButton);
-    expect(screen.getByRole('button', { name: /Exit fullscreen/i })).toHaveAttribute('aria-pressed', 'true');
+    renderParentMode();
+    const firstSign = ISL_SIGNS[0];
+    const signButtons = await screen.findAllByRole('button', { name: new RegExp(firstSign.title, 'i') });
+    const signButton = signButtons[0];
+    await user.click(signButton);
+    await user.click(signButton);
+    await user.click(signButton);
+    // Message signs are additive only (no toggle-off from the card itself),
+    // so repeated clicks on the same card should still show exactly one
+    // chip for this sign, not three.
+    const removeButtons = screen.getAllByLabelText(new RegExp(`Remove ${firstSign.title}`, 'i'));
+    expect(removeButtons).toHaveLength(1);
   });
 });

@@ -5,6 +5,7 @@ import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
 import { AmbientBackground } from '@/components/AmbientBackground';
 import { PreferencesProvider } from '@/lib/context/PreferencesContext';
+import { PracticeListProvider } from '@/lib/context/PracticeListContext';
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
 const poppins = Poppins({
@@ -24,15 +25,17 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html lang="en" className={`${inter.variable} ${poppins.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <PreferencesProvider>
-          <AmbientBackground />
-          <a href="#main-content" className="skip-link">
-            Skip to main content
-          </a>
-          <Nav />
-          <main id="main-content" className="flex flex-1 flex-col">
-            {children}
-          </main>
-          <Footer />
+          <PracticeListProvider>
+            <AmbientBackground />
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
+            <Nav />
+            <main id="main-content" className="flex flex-1 flex-col">
+              {children}
+            </main>
+            <Footer />
+          </PracticeListProvider>
         </PreferencesProvider>
       </body>
     </html>

@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { HeartHandshake, Baby, Users, LayoutGrid, ShieldCheck, Sparkles } from 'lucide-react';
+import { HeartHandshake, Baby, Users, LayoutGrid, ShieldCheck, Sparkles, Hand } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Logo } from '@/components/Logo';
 import { CommunicationPreferences } from '@/components/CommunicationPreferences';
 import { HeroVisual } from '@/components/HeroVisual';
 import { Reveal } from '@/components/Reveal';
+import { SignOfTheDay } from '@/components/isl/SignOfTheDay';
 import { usePreferences, CommunicationMode } from '@/lib/context/PreferencesContext';
 
 const ENTRIES: Array<{
@@ -53,6 +54,15 @@ const ENTRIES: Array<{
     cta: 'Browse cards',
     accent: 'var(--color-teal-500)',
     matches: ['pictures'],
+  },
+  {
+    href: '/explore',
+    icon: Hand,
+    title: 'Explore Signs',
+    body: 'Search our honestly verified library of real ISL reference videos.',
+    cta: 'Explore Signs',
+    accent: 'var(--color-blue-500)',
+    matches: ['isl', 'combination'],
   },
 ];
 
@@ -110,6 +120,12 @@ export default function Home() {
             );
           })}
         </div>
+      </section>
+
+      <section className="mx-auto mt-4 w-full max-w-6xl px-4 sm:px-6">
+        <Reveal>
+          <SignOfTheDay />
+        </Reveal>
       </section>
 
       <CommunicationPreferences />

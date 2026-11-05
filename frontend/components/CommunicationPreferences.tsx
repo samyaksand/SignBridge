@@ -16,7 +16,7 @@ const MODES: Array<{ value: CommunicationMode; icon: typeof Hand; label: string;
     value: 'isl',
     icon: Hand,
     label: 'ISL references',
-    body: 'Show sign language references first, like the demo in Parent Mode.',
+    body: 'Show real ISL reference videos first, like in Parent Mode and Explore Signs.',
   },
   {
     value: 'text',

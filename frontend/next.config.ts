@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   /* config options here */
   images: {
     dangerouslyAllowSVG: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+      },
+    ],
   },
   turbopack: {
     root: __dirname,

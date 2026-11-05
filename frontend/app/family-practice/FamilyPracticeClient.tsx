@@ -8,6 +8,20 @@ import { Button } from '@/components/ui/Button';
 import { StatusMessage } from '@/components/ui/StatusMessage';
 import scenariosData from '@/lib/data/familyScenarios.json';
 import cardsData from '@/lib/data/communicationCards.json';
+import { SignVideo } from '@/components/isl/SignVideo';
+import { searchSigns } from '@/lib/data/islSigns';
+
+// Honest check: only offer a real reference video for a scenario's card
+// when the verified library genuinely has something relevant, found by
+// searching the card's own English label against our real signs. Most
+// scenario vocabulary (e.g. "I need help") does not match our current
+// library (whole course-session videos, not single-word clips), so this
+// will often return null, and the UI below omits the link entirely in
+// that case rather than forcing an unrelated match.
+function findReferenceVideoForCard(enLabel: string) {
+  const matches = searchSigns(enLabel);
+  return matches[0] ?? null;
+}
 
 interface Step {
   id: string;
@@ -138,9 +152,32 @@ export function FamilyPracticeClient() {
                 <p className="text-sm text-[var(--color-text-muted)]">{cardById(step.cardId)?.hi}</p>
               </div>
             </div>
-            <Button className="mt-5" onClick={goNext}>
-              Ready for the child&apos;s turn
-            </Button>
+            {(() => {
+              const enLabel = cardById(step.cardId)?.en;
+              const referenceVideo = enLabel ? findReferenceVideoForCard(enLabel) : null;
+              if (!referenceVideo) {
+                return (
+                  <p className="mt-3 text-xs text-[var(--color-text-muted)]">
+                    We do not have a verified video reference for this word yet. This picture
+                    card is a placeholder, not a verified ISL recording.
+                  </p>
+                );
+              }
+              return (
+                <div className="mt-3">
+                  <p className="mb-2 text-xs font-semibold text-[var(--color-text-muted)]">
+                    See a real sign reference
+                  </p>
+                  <SignVideo sign={referenceVideo} />
+                </div>
+              );
+            })()}
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Button onClick={goNext}>Ready for the child&apos;s turn</Button>
+              <Button variant="ghost" onClick={goNext}>
+                Skip this step
+              </Button>
+            </div>
           </div>
         )}
 

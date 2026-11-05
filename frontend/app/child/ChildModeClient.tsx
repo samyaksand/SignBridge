@@ -9,6 +9,25 @@ import { StatusMessage } from '@/components/ui/StatusMessage';
 import { usePreferences } from '@/lib/context/PreferencesContext';
 import { DEMO_PREDICTION_SETS, LOW_CONFIDENCE_THRESHOLD, DemoPrediction } from '@/lib/data/childPredictions';
 import { requestSentenceSuggestions } from '@/lib/suggestions/requestSuggestions';
+import { SignVideo } from '@/components/isl/SignVideo';
+import { getSignsByCategory } from '@/lib/data/islSigns';
+
+// Honest, narrow mapping from a demo prediction label to a real verified
+// sign category, only where the match is genuinely defensible (a
+// greeting word to our "greetings" category). Most demo prediction
+// labels do not have a matching verified video yet, and this component
+// must never pretend otherwise: when there is no real match, the
+// "watch how to sign this" link is simply omitted.
+const PREDICTION_TO_CATEGORY: Record<string, 'greetings'> = {
+  'Hello!': 'greetings',
+};
+
+function findReferenceVideoFor(label: string) {
+  const category = PREDICTION_TO_CATEGORY[label];
+  if (!category) return null;
+  const matches = getSignsByCategory(category);
+  return matches[0] ?? null;
+}
 
 type ChildState =
   | 'demo'
@@ -177,8 +196,13 @@ export function ChildModeClient() {
       <h1 className="text-2xl font-semibold text-[var(--color-text)] sm:text-3xl">Child Mode</h1>
       <p className="mt-2 max-w-xl text-sm text-[var(--color-text-muted)]">
         Try showing a sign and see what SignBridge guesses. You always get to pick the right
-        one before anything is said out loud.
+        one before anything is said out loud. Take your time, there is no wrong way to practice.
       </p>
+      <ol className="mt-3 max-w-xl list-decimal space-y-1 pl-5 text-sm text-[var(--color-text-muted)]">
+        <li>Turn on the camera, or skip straight to a demo guess.</li>
+        <li>Make your sign, then look at the guesses below.</li>
+        <li>Pick the one that matches, then confirm it.</li>
+      </ol>
 
       {(state === 'demo' || state === 'ready' || state === 'capturing' || state === 'low_confidence' || state === 'prediction_pending_confirmation' || state === 'confirmed' || state === 'loading') && (
         <div className="mt-3">
@@ -286,6 +310,14 @@ export function ChildModeClient() {
                 </button>
               ))}
             </div>
+            {chosen && findReferenceVideoFor(chosen.label) && (
+              <div className="mt-3">
+                <p className="mb-2 text-xs font-semibold text-[var(--color-text-muted)]">
+                  Watch how to sign this
+                </p>
+                <SignVideo sign={findReferenceVideoFor(chosen.label)!} />
+              </div>
+            )}
             <div className="mt-4 flex flex-wrap gap-2">
               <Button size="lg" onClick={confirmPrediction} disabled={!chosen}>
                 Confirm
@@ -301,7 +333,7 @@ export function ChildModeClient() {
         )}
 
         {state === 'confirmed' && (
-          <StatusMessage kind="success">Added to your message!</StatusMessage>
+          <StatusMessage kind="success">Great job! That is added to your message.</StatusMessage>
         )}
       </Card>
 

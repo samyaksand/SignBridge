@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/child', label: 'Child Mode' },
   { href: '/family-practice', label: 'Family Practice' },
   { href: '/cards', label: 'Quick Cards' },
+  { href: '/explore', label: 'Explore Signs' },
 ];
 
 export function Nav() {
