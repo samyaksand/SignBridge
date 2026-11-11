@@ -1,43 +1,1226 @@
 [
-  {"id": "basic-01", "category": "Basic needs", "en": "I need help", "hi": "मुझे मदद चाहिए", "illustration": "/images/cards/basic-01.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "basic-02", "category": "Basic needs", "en": "I am hungry", "hi": "मुझे भूख लगी है", "illustration": "/images/cards/basic-02.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "basic-03", "category": "Basic needs", "en": "I need water", "hi": "मुझे पानी चाहिए", "illustration": "/images/cards/basic-03.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "basic-04", "category": "Basic needs", "en": "I need food", "hi": "मुझे खाना चाहिए", "illustration": "/images/cards/basic-04.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "basic-05", "category": "Basic needs", "en": "I need the toilet", "hi": "मुझे शौचालय जाना है", "illustration": "/images/cards/basic-05.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "basic-06", "category": "Basic needs", "en": "I am thirsty", "hi": "मुझे प्यास लगी है", "illustration": "/images/cards/basic-06.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-
-  {"id": "feel-01", "category": "Feelings", "en": "I am happy", "hi": "मैं खुश हूँ", "illustration": "/images/cards/feel-01.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "feel-02", "category": "Feelings", "en": "I am sad", "hi": "मैं दुखी हूँ", "illustration": "/images/cards/feel-02.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "feel-03", "category": "Feelings", "en": "I am scared", "hi": "मैं डरा हुआ हूँ", "illustration": "/images/cards/feel-03.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "feel-04", "category": "Feelings", "en": "I am angry", "hi": "मुझे गुस्सा आ रहा है", "illustration": "/images/cards/feel-04.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "feel-05", "category": "Feelings", "en": "I am tired", "hi": "मैं थका हुआ हूँ", "illustration": "/images/cards/feel-05.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "feel-06", "category": "Feelings", "en": "I need a break", "hi": "मुझे थोड़ा आराम चाहिए", "illustration": "/images/cards/feel-06.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-
-  {"id": "health-01", "category": "Health and safety", "en": "I feel unwell", "hi": "मेरी तबियत ठीक नहीं है", "illustration": "/images/cards/health-01.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "health-02", "category": "Health and safety", "en": "I am in pain", "hi": "मुझे दर्द हो रहा है", "illustration": "/images/cards/health-02.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "health-03", "category": "Health and safety", "en": "My head hurts", "hi": "मेरे सिर में दर्द है", "illustration": "/images/cards/health-03.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "health-04", "category": "Health and safety", "en": "Please call my parent", "hi": "कृपया मेरे माता-पिता को बुलाएं", "illustration": "/images/cards/health-04.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "health-05", "category": "Health and safety", "en": "I need a doctor", "hi": "मुझे डॉक्टर चाहिए", "illustration": "/images/cards/health-05.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "health-06", "category": "Health and safety", "en": "I do not feel safe", "hi": "मुझे सुरक्षित महसूस नहीं हो रहा", "illustration": "/images/cards/health-06.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-
-  {"id": "family-01", "category": "Family and home", "en": "Hello!", "hi": "नमस्ते!", "illustration": "/images/cards/family-01.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "family-02", "category": "Family and home", "en": "I love you", "hi": "मैं तुमसे प्यार करता/करती हूँ", "illustration": "/images/cards/family-02.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "family-03", "category": "Family and home", "en": "Please come here", "hi": "कृपया यहाँ आइए", "illustration": "/images/cards/family-03.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "family-04", "category": "Family and home", "en": "Please wait", "hi": "कृपया रुकिए", "illustration": "/images/cards/family-04.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "family-05", "category": "Family and home", "en": "I want to play", "hi": "मैं खेलना चाहता/चाहती हूँ", "illustration": "/images/cards/family-05.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "family-06", "category": "Family and home", "en": "I want to go home", "hi": "मैं घर जाना चाहता/चाहती हूँ", "illustration": "/images/cards/family-06.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-
-  {"id": "school-01", "category": "School and learning", "en": "I do not understand", "hi": "मुझे समझ नहीं आया", "illustration": "/images/cards/school-01.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "school-02", "category": "School and learning", "en": "Please show me again", "hi": "कृपया मुझे फिर से दिखाएं", "illustration": "/images/cards/school-02.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "school-03", "category": "School and learning", "en": "I have a question", "hi": "मेरा एक सवाल है", "illustration": "/images/cards/school-03.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "school-04", "category": "School and learning", "en": "I need help with this", "hi": "मुझे इसमें मदद चाहिए", "illustration": "/images/cards/school-04.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "school-05", "category": "School and learning", "en": "I want to answer", "hi": "मैं जवाब देना चाहता/चाहती हूँ", "illustration": "/images/cards/school-05.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "school-06", "category": "School and learning", "en": "I need more time", "hi": "मुझे और समय चाहिए", "illustration": "/images/cards/school-06.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-
-  {"id": "every-01", "category": "Everyday conversation", "en": "Yes", "hi": "हाँ", "illustration": "/images/cards/every-01.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "every-02", "category": "Everyday conversation", "en": "No", "hi": "नहीं", "illustration": "/images/cards/every-02.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "every-03", "category": "Everyday conversation", "en": "Thank you", "hi": "धन्यवाद", "illustration": "/images/cards/every-03.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "every-04", "category": "Everyday conversation", "en": "I am sorry", "hi": "मुझे खेद है", "illustration": "/images/cards/every-04.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "every-05", "category": "Everyday conversation", "en": "I do not want this", "hi": "मुझे यह नहीं चाहिए", "illustration": "/images/cards/every-05.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"},
-  {"id": "every-06", "category": "Everyday conversation", "en": "I want something else", "hi": "मुझे कुछ और चाहिए", "illustration": "/images/cards/every-06.svg", "islAsset": null, "verificationStatus": "unverified-placeholder"}
+  {
+    "id": "basic-01",
+    "category": "Basic needs",
+    "en": "I need help",
+    "hi": "मुझे मदद चाहिए",
+    "illustration": "/images/cards/basic-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "basic-02",
+    "category": "Basic needs",
+    "en": "I am hungry",
+    "hi": "मुझे भूख लगी है",
+    "illustration": "/images/cards/basic-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "basic-03",
+    "category": "Basic needs",
+    "en": "I need water",
+    "hi": "मुझे पानी चाहिए",
+    "illustration": "/images/cards/basic-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "basic-04",
+    "category": "Basic needs",
+    "en": "I need food",
+    "hi": "मुझे खाना चाहिए",
+    "illustration": "/images/cards/basic-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "basic-05",
+    "category": "Basic needs",
+    "en": "I need the toilet",
+    "hi": "मुझे शौचालय जाना है",
+    "illustration": "/images/cards/basic-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "basic-06",
+    "category": "Basic needs",
+    "en": "I am thirsty",
+    "hi": "मुझे प्यास लगी है",
+    "illustration": "/images/cards/basic-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "feel-01",
+    "category": "Feelings",
+    "en": "I am happy",
+    "hi": "मैं खुश हूँ",
+    "illustration": "/images/cards/feel-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "feel-02",
+    "category": "Feelings",
+    "en": "I am sad",
+    "hi": "मैं दुखी हूँ",
+    "illustration": "/images/cards/feel-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "feel-03",
+    "category": "Feelings",
+    "en": "I am scared",
+    "hi": "मैं डरा हुआ हूँ",
+    "illustration": "/images/cards/feel-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "feel-04",
+    "category": "Feelings",
+    "en": "I am angry",
+    "hi": "मुझे गुस्सा आ रहा है",
+    "illustration": "/images/cards/feel-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "feel-05",
+    "category": "Feelings",
+    "en": "I am tired",
+    "hi": "मैं थका हुआ हूँ",
+    "illustration": "/images/cards/feel-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "feel-06",
+    "category": "Feelings",
+    "en": "I need a break",
+    "hi": "मुझे थोड़ा आराम चाहिए",
+    "illustration": "/images/cards/feel-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "health-01",
+    "category": "Health and safety",
+    "en": "I feel unwell",
+    "hi": "मेरी तबियत ठीक नहीं है",
+    "illustration": "/images/cards/health-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "health-02",
+    "category": "Health and safety",
+    "en": "I am in pain",
+    "hi": "मुझे दर्द हो रहा है",
+    "illustration": "/images/cards/health-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "health-03",
+    "category": "Health and safety",
+    "en": "My head hurts",
+    "hi": "मेरे सिर में दर्द है",
+    "illustration": "/images/cards/health-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "health-04",
+    "category": "Health and safety",
+    "en": "Please call my parent",
+    "hi": "कृपया मेरे माता-पिता को बुलाएं",
+    "illustration": "/images/cards/health-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "health-05",
+    "category": "Health and safety",
+    "en": "I need a doctor",
+    "hi": "मुझे डॉक्टर चाहिए",
+    "illustration": "/images/cards/health-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "health-06",
+    "category": "Health and safety",
+    "en": "I do not feel safe",
+    "hi": "मुझे सुरक्षित महसूस नहीं हो रहा",
+    "illustration": "/images/cards/health-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "family-01",
+    "category": "Family and home",
+    "en": "Hello!",
+    "hi": "नमस्ते!",
+    "illustration": "/images/cards/family-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "family-02",
+    "category": "Family and home",
+    "en": "I love you",
+    "hi": "मैं तुमसे प्यार करता/करती हूँ",
+    "illustration": "/images/cards/family-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "family-03",
+    "category": "Family and home",
+    "en": "Please come here",
+    "hi": "कृपया यहाँ आइए",
+    "illustration": "/images/cards/family-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "family-04",
+    "category": "Family and home",
+    "en": "Please wait",
+    "hi": "कृपया रुकिए",
+    "illustration": "/images/cards/family-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "family-05",
+    "category": "Family and home",
+    "en": "I want to play",
+    "hi": "मैं खेलना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/family-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "family-06",
+    "category": "Family and home",
+    "en": "I want to go home",
+    "hi": "मैं घर जाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/family-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "school-01",
+    "category": "School and learning",
+    "en": "I do not understand",
+    "hi": "मुझे समझ नहीं आया",
+    "illustration": "/images/cards/school-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "school-02",
+    "category": "School and learning",
+    "en": "Please show me again",
+    "hi": "कृपया मुझे फिर से दिखाएं",
+    "illustration": "/images/cards/school-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "school-03",
+    "category": "School and learning",
+    "en": "I have a question",
+    "hi": "मेरा एक सवाल है",
+    "illustration": "/images/cards/school-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "school-04",
+    "category": "School and learning",
+    "en": "I need help with this",
+    "hi": "मुझे इसमें मदद चाहिए",
+    "illustration": "/images/cards/school-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "school-05",
+    "category": "School and learning",
+    "en": "I want to answer",
+    "hi": "मैं जवाब देना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/school-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "school-06",
+    "category": "School and learning",
+    "en": "I need more time",
+    "hi": "मुझे और समय चाहिए",
+    "illustration": "/images/cards/school-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "every-01",
+    "category": "Everyday conversation",
+    "en": "Yes",
+    "hi": "हाँ",
+    "illustration": "/images/cards/every-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "every-02",
+    "category": "Everyday conversation",
+    "en": "No",
+    "hi": "नहीं",
+    "illustration": "/images/cards/every-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "every-03",
+    "category": "Everyday conversation",
+    "en": "Thank you",
+    "hi": "धन्यवाद",
+    "illustration": "/images/cards/every-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "every-04",
+    "category": "Everyday conversation",
+    "en": "I am sorry",
+    "hi": "मुझे खेद है",
+    "illustration": "/images/cards/every-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "every-05",
+    "category": "Everyday conversation",
+    "en": "I do not want this",
+    "hi": "मुझे यह नहीं चाहिए",
+    "illustration": "/images/cards/every-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "every-06",
+    "category": "Everyday conversation",
+    "en": "I want something else",
+    "hi": "मुझे कुछ और चाहिए",
+    "illustration": "/images/cards/every-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-01",
+    "category": "Weather",
+    "en": "It is raining",
+    "hi": "बारिश हो रही है",
+    "illustration": "/images/cards/weather-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-02",
+    "category": "Weather",
+    "en": "It is sunny",
+    "hi": "धूप निकली है",
+    "illustration": "/images/cards/weather-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-03",
+    "category": "Weather",
+    "en": "It is cold",
+    "hi": "ठंड है",
+    "illustration": "/images/cards/weather-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-04",
+    "category": "Weather",
+    "en": "It is hot",
+    "hi": "गर्मी है",
+    "illustration": "/images/cards/weather-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-05",
+    "category": "Weather",
+    "en": "It is windy",
+    "hi": "हवा चल रही है",
+    "illustration": "/images/cards/weather-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-06",
+    "category": "Weather",
+    "en": "It is cloudy",
+    "hi": "बादल छाए हैं",
+    "illustration": "/images/cards/weather-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-07",
+    "category": "Weather",
+    "en": "I need an umbrella",
+    "hi": "मुझे छाता चाहिए",
+    "illustration": "/images/cards/weather-07.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-08",
+    "category": "Weather",
+    "en": "It is snowing",
+    "hi": "बर्फ़ गिर रही है",
+    "illustration": "/images/cards/weather-08.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-09",
+    "category": "Weather",
+    "en": "There is a storm",
+    "hi": "तूफ़ान आ रहा है",
+    "illustration": "/images/cards/weather-09.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "weather-10",
+    "category": "Weather",
+    "en": "The weather is nice today",
+    "hi": "आज मौसम अच्छा है",
+    "illustration": "/images/cards/weather-10.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-01",
+    "category": "Transport",
+    "en": "I want to go by car",
+    "hi": "मैं कार से जाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/transport-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-02",
+    "category": "Transport",
+    "en": "I want to go by bus",
+    "hi": "मैं बस से जाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/transport-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-03",
+    "category": "Transport",
+    "en": "I want to go by train",
+    "hi": "मैं ट्रेन से जाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/transport-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-04",
+    "category": "Transport",
+    "en": "I want to walk",
+    "hi": "मैं पैदल जाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/transport-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-05",
+    "category": "Transport",
+    "en": "I want to ride my bicycle",
+    "hi": "मैं साइकिल चलाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/transport-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-06",
+    "category": "Transport",
+    "en": "Please slow down",
+    "hi": "कृपया धीरे चलिए",
+    "illustration": "/images/cards/transport-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-07",
+    "category": "Transport",
+    "en": "Are we there yet",
+    "hi": "क्या हम पहुँच गए",
+    "illustration": "/images/cards/transport-07.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-08",
+    "category": "Transport",
+    "en": "I want to go to school",
+    "hi": "मैं स्कूल जाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/transport-08.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-09",
+    "category": "Transport",
+    "en": "I want to go to the park",
+    "hi": "मैं पार्क जाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/transport-09.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "transport-10",
+    "category": "Transport",
+    "en": "I feel sick in the car",
+    "hi": "मुझे गाड़ी में उल्टी जैसा महसूस हो रहा है",
+    "illustration": "/images/cards/transport-10.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-01",
+    "category": "Clothing",
+    "en": "I want to wear this shirt",
+    "hi": "मैं यह कमीज़ पहनना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/clothing-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-02",
+    "category": "Clothing",
+    "en": "I need my shoes",
+    "hi": "मुझे मेरे जूते चाहिए",
+    "illustration": "/images/cards/clothing-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-03",
+    "category": "Clothing",
+    "en": "I need my jacket",
+    "hi": "मुझे मेरी जैकेट चाहिए",
+    "illustration": "/images/cards/clothing-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-04",
+    "category": "Clothing",
+    "en": "This is too tight",
+    "hi": "यह बहुत तंग है",
+    "illustration": "/images/cards/clothing-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-05",
+    "category": "Clothing",
+    "en": "This is too loose",
+    "hi": "यह बहुत ढीला है",
+    "illustration": "/images/cards/clothing-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-06",
+    "category": "Clothing",
+    "en": "I need a sweater",
+    "hi": "मुझे स्वेटर चाहिए",
+    "illustration": "/images/cards/clothing-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-07",
+    "category": "Clothing",
+    "en": "I need my socks",
+    "hi": "मुझे मोज़े चाहिए",
+    "illustration": "/images/cards/clothing-07.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-08",
+    "category": "Clothing",
+    "en": "I want to change my clothes",
+    "hi": "मैं कपड़े बदलना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/clothing-08.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-09",
+    "category": "Clothing",
+    "en": "My shoes do not fit",
+    "hi": "मेरे जूते ठीक से नहीं आ रहे",
+    "illustration": "/images/cards/clothing-09.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "clothing-10",
+    "category": "Clothing",
+    "en": "I need a hat",
+    "hi": "मुझे टोपी चाहिए",
+    "illustration": "/images/cards/clothing-10.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-01",
+    "category": "Body parts",
+    "en": "My stomach hurts",
+    "hi": "मेरे पेट में दर्द है",
+    "illustration": "/images/cards/body-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-02",
+    "category": "Body parts",
+    "en": "My ear hurts",
+    "hi": "मेरे कान में दर्द है",
+    "illustration": "/images/cards/body-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-03",
+    "category": "Body parts",
+    "en": "My tooth hurts",
+    "hi": "मेरे दांत में दर्द है",
+    "illustration": "/images/cards/body-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-04",
+    "category": "Body parts",
+    "en": "My hand hurts",
+    "hi": "मेरे हाथ में दर्द है",
+    "illustration": "/images/cards/body-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-05",
+    "category": "Body parts",
+    "en": "My leg hurts",
+    "hi": "मेरे पैर में दर्द है",
+    "illustration": "/images/cards/body-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-06",
+    "category": "Body parts",
+    "en": "My eye hurts",
+    "hi": "मेरी आंख में दर्द है",
+    "illustration": "/images/cards/body-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-07",
+    "category": "Body parts",
+    "en": "My throat hurts",
+    "hi": "मेरे गले में दर्द है",
+    "illustration": "/images/cards/body-07.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-08",
+    "category": "Body parts",
+    "en": "I need to wash my hands",
+    "hi": "मुझे हाथ धोने हैं",
+    "illustration": "/images/cards/body-08.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-09",
+    "category": "Body parts",
+    "en": "I need a bandage",
+    "hi": "मुझे पट्टी चाहिए",
+    "illustration": "/images/cards/body-09.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "body-10",
+    "category": "Body parts",
+    "en": "I bumped my knee",
+    "hi": "मेरे घुटने में चोट लगी है",
+    "illustration": "/images/cards/body-10.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-01",
+    "category": "Animals",
+    "en": "I see a dog",
+    "hi": "मुझे एक कुत्ता दिख रहा है",
+    "illustration": "/images/cards/animal-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-02",
+    "category": "Animals",
+    "en": "I see a cat",
+    "hi": "मुझे एक बिल्ली दिख रही है",
+    "illustration": "/images/cards/animal-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-03",
+    "category": "Animals",
+    "en": "I want to pet the animal",
+    "hi": "मैं जानवर को सहलाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/animal-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-04",
+    "category": "Animals",
+    "en": "I am scared of that animal",
+    "hi": "मुझे उस जानवर से डर लगता है",
+    "illustration": "/images/cards/animal-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-05",
+    "category": "Animals",
+    "en": "I see a bird",
+    "hi": "मुझे एक पक्षी दिख रहा है",
+    "illustration": "/images/cards/animal-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-06",
+    "category": "Animals",
+    "en": "I see a fish",
+    "hi": "मुझे एक मछली दिख रही है",
+    "illustration": "/images/cards/animal-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-07",
+    "category": "Animals",
+    "en": "I want to feed the animal",
+    "hi": "मैं जानवर को खाना खिलाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/animal-07.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-08",
+    "category": "Animals",
+    "en": "I see a cow",
+    "hi": "मुझे एक गाय दिख रही है",
+    "illustration": "/images/cards/animal-08.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-09",
+    "category": "Animals",
+    "en": "I want a pet",
+    "hi": "मुझे एक पालतू जानवर चाहिए",
+    "illustration": "/images/cards/animal-09.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "animal-10",
+    "category": "Animals",
+    "en": "That animal is loud",
+    "hi": "वह जानवर बहुत आवाज़ करता है",
+    "illustration": "/images/cards/animal-10.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "color-01",
+    "category": "Colors",
+    "en": "I like the color red",
+    "hi": "मुझे लाल रंग पसंद है",
+    "illustration": "/images/cards/color-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "color-02",
+    "category": "Colors",
+    "en": "I like the color blue",
+    "hi": "मुझे नीला रंग पसंद है",
+    "illustration": "/images/cards/color-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "color-03",
+    "category": "Colors",
+    "en": "I like the color green",
+    "hi": "मुझे हरा रंग पसंद है",
+    "illustration": "/images/cards/color-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "color-04",
+    "category": "Colors",
+    "en": "I like the color yellow",
+    "hi": "मुझे पीला रंग पसंद है",
+    "illustration": "/images/cards/color-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "color-05",
+    "category": "Colors",
+    "en": "What color is this",
+    "hi": "यह कौन सा रंग है",
+    "illustration": "/images/cards/color-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "color-06",
+    "category": "Colors",
+    "en": "I want the pink one",
+    "hi": "मुझे गुलाबी वाला चाहिए",
+    "illustration": "/images/cards/color-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-01",
+    "category": "Numbers and time",
+    "en": "What time is it",
+    "hi": "अभी क्या समय हुआ है",
+    "illustration": "/images/cards/numtime-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-02",
+    "category": "Numbers and time",
+    "en": "How many more minutes",
+    "hi": "और कितने मिनट बचे हैं",
+    "illustration": "/images/cards/numtime-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-03",
+    "category": "Numbers and time",
+    "en": "It is time to go",
+    "hi": "जाने का समय हो गया है",
+    "illustration": "/images/cards/numtime-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-04",
+    "category": "Numbers and time",
+    "en": "I want five more minutes",
+    "hi": "मुझे पांच मिनट और चाहिए",
+    "illustration": "/images/cards/numtime-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-05",
+    "category": "Numbers and time",
+    "en": "It is morning",
+    "hi": "सुबह हो गई है",
+    "illustration": "/images/cards/numtime-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-06",
+    "category": "Numbers and time",
+    "en": "It is night time",
+    "hi": "रात हो गई है",
+    "illustration": "/images/cards/numtime-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-07",
+    "category": "Numbers and time",
+    "en": "Today",
+    "hi": "आज",
+    "illustration": "/images/cards/numtime-07.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-08",
+    "category": "Numbers and time",
+    "en": "Tomorrow",
+    "hi": "कल",
+    "illustration": "/images/cards/numtime-08.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-09",
+    "category": "Numbers and time",
+    "en": "I want one more",
+    "hi": "मुझे एक और चाहिए",
+    "illustration": "/images/cards/numtime-09.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "numtime-10",
+    "category": "Numbers and time",
+    "en": "I want two of these",
+    "hi": "मुझे इनमें से दो चाहिए",
+    "illustration": "/images/cards/numtime-10.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "place-01",
+    "category": "Places",
+    "en": "I want to go to the bathroom",
+    "hi": "मुझे बाथरूम जाना है",
+    "illustration": "/images/cards/place-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "place-02",
+    "category": "Places",
+    "en": "I want to go to the kitchen",
+    "hi": "मुझे रसोई में जाना है",
+    "illustration": "/images/cards/place-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "place-03",
+    "category": "Places",
+    "en": "I want to go to my room",
+    "hi": "मुझे अपने कमरे में जाना है",
+    "illustration": "/images/cards/place-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "place-04",
+    "category": "Places",
+    "en": "I want to go outside",
+    "hi": "मुझे बाहर जाना है",
+    "illustration": "/images/cards/place-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "place-05",
+    "category": "Places",
+    "en": "I want to go to the shop",
+    "hi": "मुझे दुकान जाना है",
+    "illustration": "/images/cards/place-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "place-06",
+    "category": "Places",
+    "en": "Where are we going",
+    "hi": "हम कहाँ जा रहे हैं",
+    "illustration": "/images/cards/place-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "emer-01",
+    "category": "Emergencies",
+    "en": "Call for help now",
+    "hi": "अभी मदद के लिए बुलाइए",
+    "illustration": "/images/cards/emer-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "emer-02",
+    "category": "Emergencies",
+    "en": "This is an emergency",
+    "hi": "यह एक आपातकाल है",
+    "illustration": "/images/cards/emer-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "emer-03",
+    "category": "Emergencies",
+    "en": "I am lost",
+    "hi": "मैं खो गया/गई हूँ",
+    "illustration": "/images/cards/emer-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "emer-04",
+    "category": "Emergencies",
+    "en": "Someone is hurt",
+    "hi": "किसी को चोट लगी है",
+    "illustration": "/images/cards/emer-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "emer-05",
+    "category": "Emergencies",
+    "en": "I need the fire brigade",
+    "hi": "मुझे फायर ब्रिगेड चाहिए",
+    "illustration": "/images/cards/emer-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "emer-06",
+    "category": "Emergencies",
+    "en": "I need the police",
+    "hi": "मुझे पुलिस चाहिए",
+    "illustration": "/images/cards/emer-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-01",
+    "category": "Play and games",
+    "en": "I want to play outside",
+    "hi": "मैं बाहर खेलना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/play-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-02",
+    "category": "Play and games",
+    "en": "Can we play together",
+    "hi": "क्या हम साथ खेल सकते हैं",
+    "illustration": "/images/cards/play-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-03",
+    "category": "Play and games",
+    "en": "It is your turn",
+    "hi": "अब तुम्हारी बारी है",
+    "illustration": "/images/cards/play-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-04",
+    "category": "Play and games",
+    "en": "It is my turn",
+    "hi": "अब मेरी बारी है",
+    "illustration": "/images/cards/play-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-05",
+    "category": "Play and games",
+    "en": "I want to draw",
+    "hi": "मैं चित्र बनाना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/play-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-06",
+    "category": "Play and games",
+    "en": "I want to build blocks",
+    "hi": "मैं ब्लॉक से खेलना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/play-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-07",
+    "category": "Play and games",
+    "en": "I won the game",
+    "hi": "मैं खेल जीत गया/गई",
+    "illustration": "/images/cards/play-07.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-08",
+    "category": "Play and games",
+    "en": "Let us play a new game",
+    "hi": "चलो एक नया खेल खेलते हैं",
+    "illustration": "/images/cards/play-08.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-09",
+    "category": "Play and games",
+    "en": "I want to watch a show",
+    "hi": "मैं कोई शो देखना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/play-09.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "play-10",
+    "category": "Play and games",
+    "en": "I want to listen to music",
+    "hi": "मैं संगीत सुनना चाहता/चाहती हूँ",
+    "illustration": "/images/cards/play-10.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "food-01",
+    "category": "Food and drink",
+    "en": "I want milk",
+    "hi": "मुझे दूध चाहिए",
+    "illustration": "/images/cards/food-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "food-02",
+    "category": "Food and drink",
+    "en": "I want juice",
+    "hi": "मुझे जूस चाहिए",
+    "illustration": "/images/cards/food-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "food-03",
+    "category": "Food and drink",
+    "en": "I want fruit",
+    "hi": "मुझे फल चाहिए",
+    "illustration": "/images/cards/food-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "food-04",
+    "category": "Food and drink",
+    "en": "I want rice",
+    "hi": "मुझे चावल चाहिए",
+    "illustration": "/images/cards/food-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "food-05",
+    "category": "Food and drink",
+    "en": "This is too spicy",
+    "hi": "यह बहुत तीखा है",
+    "illustration": "/images/cards/food-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "food-06",
+    "category": "Food and drink",
+    "en": "I am full",
+    "hi": "मेरा पेट भर गया है",
+    "illustration": "/images/cards/food-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "class-01",
+    "category": "Classroom objects",
+    "en": "I need a pencil",
+    "hi": "मुझे पेंसिल चाहिए",
+    "illustration": "/images/cards/class-01.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "class-02",
+    "category": "Classroom objects",
+    "en": "I need paper",
+    "hi": "मुझे कागज़ चाहिए",
+    "illustration": "/images/cards/class-02.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "class-03",
+    "category": "Classroom objects",
+    "en": "I need my book",
+    "hi": "मुझे मेरी किताब चाहिए",
+    "illustration": "/images/cards/class-03.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "class-04",
+    "category": "Classroom objects",
+    "en": "I need scissors",
+    "hi": "मुझे कैंची चाहिए",
+    "illustration": "/images/cards/class-04.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "class-05",
+    "category": "Classroom objects",
+    "en": "I need a crayon",
+    "hi": "मुझे क्रेयॉन चाहिए",
+    "illustration": "/images/cards/class-05.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  },
+  {
+    "id": "class-06",
+    "category": "Classroom objects",
+    "en": "I dropped my pencil",
+    "hi": "मेरी पेंसिल गिर गई",
+    "illustration": "/images/cards/class-06.svg",
+    "islAsset": null,
+    "verificationStatus": "unverified-placeholder"
+  }
 ]

@@ -38,10 +38,22 @@ export function Reveal({
           }
         }
       },
-      { threshold: 0.15 }
+      // A low threshold, not a fraction of the element's own height: a tall
+      // block (e.g. a long grid) may never cross a percentage-of-self
+      // threshold if only its top edge is ever in view, leaving it stuck
+      // invisible. 1px of intersection is enough to confirm "on screen."
+      { threshold: 0 }
     );
     observer.observe(node);
-    return () => observer.disconnect();
+
+    // Belt and braces: if the observer never fires for any reason, never
+    // leave real content permanently invisible.
+    const fallback = setTimeout(() => setVisible(true), 1200);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(fallback);
+    };
   }, []);
 
   return (

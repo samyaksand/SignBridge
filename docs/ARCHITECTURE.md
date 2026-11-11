@@ -12,7 +12,7 @@ docs/       This folder
 ```
 
 The frontend works completely on its own. No backend call is required for
-any of the four experiences (Parent Mode, Child Mode, Family Practice, Quick
+any of the three experiences (Parent Mode, Child Mode, Quick
 Cards). Everything runs in the browser. The backend is a genuinely optional
 enhancement (AI sentence suggestions), never a dependency.
 
@@ -87,7 +87,7 @@ dataset facts.
   when it closes.
 - Clear state labels everywhere (demo, loading, unavailable, low confidence)
   so the app never pretends to be smarter than it is.
-- The 36 cards and the one Family Practice scenario are structured as plain
+- The 36 cards are structured as plain
   JSON data, so more can be added later without touching the page code.
 - Every placeholder or unverified piece (demo predictions, the avatar's
   lack of ISL-specific animation, the Requesty suggestions being

@@ -30,7 +30,7 @@ export function SignVideo({ sign, autoplay = false }: { sign: IslSign; autoplay?
           href={sign.attributionUrl}
           target="_blank"
           rel="noreferrer noopener"
-          className="inline-flex items-center gap-1 font-medium text-[var(--color-teal-600)] underline"
+          className="inline-flex items-center gap-1 font-medium text-[var(--color-green-600)] underline"
         >
           Watch on YouTube <ExternalLink size={12} aria-hidden="true" />
         </a>

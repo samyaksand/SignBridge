@@ -22,8 +22,8 @@ export function Logo({ size = 32, withWordmark = true }: { size?: number; withWo
         <circle cx="34" cy="28" r="3" fill="white" />
         <defs>
           <linearGradient id="sb-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#159099" />
-            <stop offset="1" stopColor="#5146e0" />
+            <stop stopColor="#1a9c4a" />
+            <stop offset="1" stopColor="#1d6fd6" />
           </linearGradient>
         </defs>
       </svg>

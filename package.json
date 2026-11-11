@@ -5,8 +5,10 @@
   "description": "SignBridge: connecting hands, bridging worlds. Run both the frontend and the optional backend together with one command.",
   "scripts": {
     "dev": "node scripts/print-banner.js && concurrently -n frontend,backend -c blue,green --kill-others-on-fail \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:all": "node scripts/print-banner-all.js && concurrently -n frontend,backend,experimental -c blue,green,yellow --kill-others-on-fail \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:experimental\"",
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "node scripts/run-backend.js",
+    "dev:experimental": "node scripts/run-experimental-services.js",
     "build": "npm run build --prefix frontend",
     "test": "npm run test --prefix frontend && python -m pytest ml/tests backend/tests -v"
   },

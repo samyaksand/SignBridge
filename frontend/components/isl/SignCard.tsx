@@ -19,8 +19,8 @@ export function SignCard({
       aria-pressed={selected}
       className={`flex w-full flex-col gap-2 rounded-[var(--radius-md)] border p-3 text-left transition-colors ${
         selected
-          ? 'border-[var(--color-indigo-500)] bg-[var(--color-indigo-500)]/10'
-          : 'border-[var(--color-border)] hover:border-[var(--color-teal-400)]'
+          ? 'border-[var(--color-gold-500)] bg-[var(--color-gold-500)]/10'
+          : 'border-[var(--color-border)] hover:border-[var(--color-green-400)]'
       }`}
     >
       <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-sm)] bg-[var(--color-surface-muted)]">

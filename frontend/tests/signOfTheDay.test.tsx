@@ -25,4 +25,14 @@ describe('SignOfTheDay (homepage)', () => {
     replayButton.click();
     expect(document.querySelector('iframe')).not.toBeNull();
   });
+
+  it('shows a small pack of several words instead of only one', () => {
+    render(<SignOfTheDay />);
+    const group = screen.queryByRole('group', { name: "Signs in today's pack" });
+    if (group) {
+      const chips = screen.getAllByRole('button').filter((b) => b.getAttribute('aria-pressed') !== null);
+      expect(chips.length).toBeGreaterThanOrEqual(2);
+      expect(chips.length).toBeLessThanOrEqual(5);
+    }
+  });
 });

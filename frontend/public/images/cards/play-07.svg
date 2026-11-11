@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="I won the game">
+  <rect width="128" height="128" rx="20" fill="#fdf3e6"/>
+  <path d="M30 56a12 12 0 0112-12h44a12 12 0 0112 12v16a12 12 0 01-12 12H42a12 12 0 01-12-12z M46 56v12 M40 62h12 M86 58a5 5 0 110 10 5 5 0 010-10z M74 50a5 5 0 110 10 5 5 0 010-10z" fill="none" stroke="#d1891f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

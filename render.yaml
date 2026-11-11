@@ -1,0 +1,59 @@
+# Render "Blueprint" config for SignBridge's two still-needed Python
+# services. Deploy by connecting this repo on Render and selecting
+# "New Blueprint" (or `render blueprint launch` with the Render CLI).
+#
+# backend/app (Requesty suggestions + ISL recognition, merged; see
+# backend/app/isl_recognition for the GPL-3.0 note on that merge) is listed
+# below as signbridge-backend. ISL recognition used to run as its own
+# separate service (backend/services/isl-sign-recognition) specifically to
+# keep its vendored GPL-3.0 code out of this backend; that isolation was
+# deliberately given up, so it is now part of this one service.
+#
+# Both services below are genuinely stateless (no database, no file writes
+# beyond loading their own model files at startup), which is what makes them
+# eligible for Render's free web service tier.
+#
+# IMPORTANT (read before deploying):
+# - Render's own 2026 materials describe the free web service tier as not
+#   requiring a credit card, but multiple user reports in Render's own
+#   community forum describe being asked for one during signup. This is
+#   unresolved from outside research; verify at signup time on your own
+#   account and do not assume either way.
+# - Free web services spin down after 15 minutes of no inbound traffic and
+#   take roughly 30-60 seconds to wake back up on the next request. Both
+#   frontend service-check helpers (checkRecognitionService.ts and the
+#   SoundSigns checker) already handle an unreachable/slow service with an
+#   honest status message, so this is a UX tradeoff, not a correctness bug.
+# - Each free service gets 750 instance-hours/month shared across the
+#   Render account's free services; running both of these at the same time,
+#   both sleeping when idle, comfortably fits within that.
+services:
+  - type: web
+    name: signbridge-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ALLOWED_ORIGIN
+        sync: false # set to your deployed frontend origin, e.g. https://signbridge.pages.dev
+      - key: REQUESTY_API_KEY
+        sync: false # your own Requesty key; leave unset and /suggestions returns an honest local fallback
+
+  - type: web
+    name: signbridge-soundsigns
+    runtime: python
+    rootDir: backend/services/soundsigns
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 30 transcription:app
+    envVars:
+      - key: ALLOWED_ORIGIN
+        sync: false # set to your deployed frontend origin, e.g. https://signbridge.pages.dev
+      - key: REQUESTY_API_KEY
+        sync: false # your own Requesty key; leave unset and this feature returns an honest 503
+      - key: REQUESTY_MODEL
+        value: nvidia/nemotron-3-super-120b-a12b
+      - key: REQUESTY_BASE_URL
+        value: https://router.requesty.ai/v1

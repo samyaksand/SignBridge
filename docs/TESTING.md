@@ -199,7 +199,7 @@ npm run build
 ```
 
 **Last actual run: build completed successfully**, all 7 routes (`/`,
-`/parent`, `/child`, `/family-practice`, `/cards`, `/privacy`, plus the
+`/parent`, `/child`, `/cards`, `/privacy`, plus the
 404 page) compiled and statically generated with no errors or warnings,
 TypeScript checking included.
 

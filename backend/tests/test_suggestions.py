@@ -130,6 +130,37 @@ def test_model_unavailable_message_is_transient():
     assert _is_transient_error(RuntimeError("the requested model is unavailable")) is True
 
 
+def test_model_no_longer_available_message_is_transient():
+    """Regression: Requesty's real wording for a retired model is 'is no
+    longer available', which does not contain the substring 'unavailable'.
+    A real request against Requesty's live router surfaced this exact
+    message and crashed with an unhandled 500 before this case was added."""
+    err = RuntimeError(
+        'Error code: 404 - {\'error\': {\'message\': \'The requested model '
+        '"nvidia/nemotron-3-super-120b-a12b" is no longer available. Pick '
+        "another model from https://app.requesty.ai/model-library'}}"
+    )
+    assert _is_transient_error(err) is True
+
+
+def test_model_not_approved_for_key_is_transient_not_auth():
+    """Regression: Requesty returns a real 403 when a specific model is not
+    on this key's approved list, not when the key itself is invalid. This
+    must be skipped like any other unavailable model, not raised as a fatal
+    RequestyAuthError that aborts the whole fallback chain early."""
+
+    class _FakeForbidden(Exception):
+        status_code = 403
+
+    err = _FakeForbidden(
+        "Error code: 403 - {'error': {'message': 'The requested model is "
+        "not approved for this API key. An org or group admin can approve "
+        "it in the Model Library'}}"
+    )
+    assert _is_transient_error(err) is True
+    assert _is_auth_error(err) is False
+
+
 def test_generic_value_error_is_not_transient():
     assert _is_transient_error(ValueError("bad request: missing field")) is False
 
@@ -149,7 +180,10 @@ def test_model_priority_list_preserved_verbatim():
 def test_model_priority_bounded(monkeypatch):
     monkeypatch.delenv("REQUESTY_MODEL", raising=False)
     order = _get_model_priority()
-    assert len(order) <= 3  # MAX_FALLBACK_ATTEMPTS
+    # Bounded to the full priority list: a dead or empty-responding model
+    # earlier in the list must never block reaching a working one later in
+    # it, so every configured model gets one real attempt.
+    assert len(order) == len(REQUESTY_MODEL_PRIORITY)
     assert order[0] == REQUESTY_MODEL_PRIORITY[0]
 
 
@@ -288,7 +322,8 @@ def test_call_requesty_returns_none_when_response_has_empty_content(monkeypatch)
     monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
     monkeypatch.delenv("REQUESTY_MODEL", raising=False)
 
-    fake_client = _FakeOpenAIClient([_FakeResponse(""), _FakeResponse(None), _FakeResponse("   ")])
+    empty_responses = [_FakeResponse("") for _ in REQUESTY_MODEL_PRIORITY]
+    fake_client = _FakeOpenAIClient(empty_responses)
     import openai as openai_module
 
     monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
@@ -309,7 +344,8 @@ def test_get_suggestions_falls_back_locally_when_requesty_exhausts_transient_fai
     class _TransientError(Exception):
         status_code = 500
 
-    fake_client = _FakeOpenAIClient([_TransientError("x"), _TransientError("x"), _TransientError("x")])
+    transient_errors = [_TransientError("x") for _ in REQUESTY_MODEL_PRIORITY]
+    fake_client = _FakeOpenAIClient(transient_errors)
     import openai as openai_module
 
     monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)

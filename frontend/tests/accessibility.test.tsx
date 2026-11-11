@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PreferencesProvider } from '@/lib/context/PreferencesContext';
-import { CommunicationPreferences } from '@/components/CommunicationPreferences';
 import { CardsClient } from '@/app/cards/CardsClient';
 
 vi.mock('next/navigation', () => ({
@@ -18,25 +17,11 @@ describe('accessibility: roles and labels', () => {
   it('Nav exposes real links with accessible names, reachable by role', async () => {
     const { Nav } = await import('@/components/Nav');
     render(<Nav />);
-    for (const name of ['Parent Mode', 'Child Mode', 'Family Practice', 'Quick Cards']) {
+    for (const name of ['Explore Signs', 'Quick Cards']) {
       expect(screen.getByRole('link', { name })).toBeInTheDocument();
     }
   });
 
-  it('CommunicationPreferences mode selector is a real radiogroup with named radios', () => {
-    render(
-      <PreferencesProvider>
-        <CommunicationPreferences />
-      </PreferencesProvider>
-    );
-    const group = screen.getByRole('radiogroup', { name: 'Communication style' });
-    expect(group).toBeInTheDocument();
-    const radios = screen.getAllByRole('radio');
-    expect(radios.length).toBe(4);
-    for (const radio of radios) {
-      expect(radio).toHaveAccessibleName();
-    }
-  });
 
   it('Quick Cards search input has an accessible label distinct from its placeholder', () => {
     render(
@@ -75,17 +60,6 @@ describe('accessibility: roles and labels', () => {
     expect(screen.getByText('I am happy')).toBeInTheDocument();
   });
 
-  it('text size and reduced motion controls use aria-pressed rather than relying on color alone', () => {
-    render(
-      <PreferencesProvider>
-        <CommunicationPreferences />
-      </PreferencesProvider>
-    );
-    const reduceMotionBtn = screen.getByRole('button', { name: 'Reduce motion' });
-    expect(reduceMotionBtn).toHaveAttribute('aria-pressed', 'false');
-    const largeBtn = screen.getByRole('button', { name: 'Large' });
-    expect(largeBtn).toHaveAttribute('aria-pressed');
-  });
 });
 
 /**

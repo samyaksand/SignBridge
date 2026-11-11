@@ -7,9 +7,10 @@ dist/
 
 # Env files (never commit secrets)
 .env
-.env.example
 .env.local
 .env.*.local
+# Note: .env.example files ARE committed intentionally as templates.
+# Keep real secrets out of them; do not add .env.example here.
 
 # Python
 __pycache__/
@@ -25,9 +26,16 @@ ml/logs/
 *.onnx
 *.npy
 *.npz
+# Exception: the real, vendored word-recognition model weights for the
+# isl-sign-recognition service are a genuine third-party model file this
+# service needs to run, not a generated ML training artifact.
+!backend/services/isl-sign-recognition/model.npz
 
 # OS / editor
 .DS_Store
 Thumbs.db
 .vscode/
 *.log
+
+# Claude Code's own local session/config data (never public)
+.claude/

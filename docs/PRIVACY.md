@@ -35,7 +35,7 @@ data, matching the actual code in this repository.
 
 ## History and session state
 
-- Family Practice and Child Mode only keep their progress (predictions,
+- Child Mode only keeps its progress (predictions,
   your in-progress message, any AI sentence suggestions) in memory, in React
   state, while the page is open. Refreshing or closing the tab clears it.
   Nothing is saved to a database, and there is no persistent child profile

@@ -15,7 +15,7 @@ const PracticeListContext = createContext<PracticeListContextValue | null>(null)
 
 /**
  * Session-only practice list, consistent with PreferencesContext's
- * communicationMode/reducedMotion/speechEnabled: plain useState, nothing
+ * reducedMotion/speechEnabled: plain useState, nothing
  * written to localStorage or any backend, resets on reload. This matches
  * the project's no-persistent-profiles principle (the only sanctioned
  * exception is textSize, handled separately in PreferencesContext).

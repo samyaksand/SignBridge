@@ -64,7 +64,7 @@ same process in machine-readable form).
 | Wrapping up and quiz (2025) | m4S0R9yXulU | https://www.youtube.com/watch?v=m4S0R9yXulU | PM eVidya ISL 31 | oembed | https://ciet.ncert.gov.in/activity/biSL |
 
 Every video shown anywhere in the app (Sign of the Day, Explore Signs, Parent
-Mode, Child Mode, Family Practice) displays this same attribution text and a
+Mode, Child Mode) displays this same attribution text and a
 link to the original YouTube video, sourced from `frontend/lib/data/islSigns.ts`.
 
 ## What was removed

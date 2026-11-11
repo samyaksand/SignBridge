@@ -2,35 +2,31 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 
-export type CommunicationMode = 'isl' | 'text' | 'pictures' | 'combination';
-export type TextLanguage = 'en' | 'hi';
 export type TextSize = 'small' | 'medium' | 'large';
+export type SpeechLanguage = 'en' | 'hi';
 
 export interface Preferences {
-  communicationMode: CommunicationMode;
-  textLanguage: TextLanguage;
   textSize: TextSize;
   reducedMotion: boolean;
   speechEnabled: boolean;
+  speechLanguage: SpeechLanguage;
 }
 
 interface PreferencesContextValue extends Preferences {
-  setCommunicationMode: (mode: CommunicationMode) => void;
-  setTextLanguage: (lang: TextLanguage) => void;
   setTextSize: (size: TextSize) => void;
   setReducedMotion: (value: boolean) => void;
   setSpeechEnabled: (value: boolean) => void;
+  setSpeechLanguage: (value: SpeechLanguage) => void;
   speechSupported: boolean;
 }
 
 const TEXT_SIZE_STORAGE_KEY = 'signbridge-text-size';
 
 const DEFAULT_PREFERENCES: Preferences = {
-  communicationMode: 'combination',
-  textLanguage: 'en',
   textSize: 'medium',
   reducedMotion: false,
   speechEnabled: true,
+  speechLanguage: 'en',
 };
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
@@ -55,18 +51,19 @@ function storeTextSize(size: TextSize): void {
 }
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
-  // Communication mode, reduced motion, and speech are session-only: they
-  // reset on reload and are never written to localStorage or any backend.
-  // This matches the project's "no persistent child profiles" principle.
-  const [communicationMode, setCommunicationMode] = useState<CommunicationMode>(
-    DEFAULT_PREFERENCES.communicationMode
-  );
-  const [textLanguage, setTextLanguage] = useState<TextLanguage>(DEFAULT_PREFERENCES.textLanguage);
+  // Reduced motion and speech are session-only: they reset on reload and are
+  // never written to localStorage or any backend. This matches the
+  // project's "no persistent child profiles" principle.
   // Text size is a generic site display preference, not tied to any profile,
   // so it is allowed to persist the same way the existing ThemeToggle does.
   const [textSize, setTextSizeState] = useState<TextSize>(DEFAULT_PREFERENCES.textSize);
   const [reducedMotion, setReducedMotion] = useState<boolean>(DEFAULT_PREFERENCES.reducedMotion);
   const [speechEnabled, setSpeechEnabled] = useState<boolean>(DEFAULT_PREFERENCES.speechEnabled);
+  // Speech language is session-only, same as reducedMotion/speechEnabled:
+  // it resets on reload and is never written to localStorage or any backend.
+  const [speechLanguage, setSpeechLanguage] = useState<SpeechLanguage>(
+    DEFAULT_PREFERENCES.speechLanguage
+  );
   const [speechSupported, setSpeechSupported] = useState(true);
 
   useEffect(() => {
@@ -99,19 +96,17 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<PreferencesContextValue>(
     () => ({
-      communicationMode,
-      textLanguage,
       textSize,
       reducedMotion,
       speechEnabled,
+      speechLanguage,
       speechSupported,
-      setCommunicationMode,
-      setTextLanguage,
       setTextSize,
       setReducedMotion,
       setSpeechEnabled,
+      setSpeechLanguage,
     }),
-    [communicationMode, textLanguage, textSize, reducedMotion, speechEnabled, speechSupported]
+    [textSize, reducedMotion, speechEnabled, speechLanguage, speechSupported]
   );
 
   return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>;

@@ -12,7 +12,10 @@ confirmed words and language, never raw video or landmark data, the request
 schema below makes anything else structurally impossible to send.
 """
 
+import os
+
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Literal
 
@@ -24,14 +27,32 @@ from .suggestions import (
     MAX_WORDS,
     MAX_WORD_LENGTH,
 )
+from .isl_recognition import router as isl_recognition_router
 
 app = FastAPI(
-    title="SignBridge backend (optional)",
+    title="SignBridge backend",
     description=(
-        "Accepts confirmed word meanings and an output language, and returns "
-        "short sentence suggestions. Uses only the local curated fallback "
-        "unless REQUESTY_API_KEY is set."
+        "SignBridge's own backend. Includes an optional sentence-suggestion "
+        "endpoint (Requesty-backed, off by default) and the ISL recognition "
+        "endpoints under /isl-recognition. The ISL recognition module "
+        "includes GPL-3.0-licensed code; see backend/app/isl_recognition's "
+        "own module docstring and LICENSE-GPL-3.0-Cl0ud9.txt before "
+        "distributing this backend."
     ),
+)
+app.include_router(isl_recognition_router)
+
+# Allowed frontend origin(s) for CORS. Comma-separated if more than one is
+# ever needed. Defaults to the local Next.js dev server; set ALLOWED_ORIGIN
+# to the real deployed frontend origin in production.
+_allowed_origins_raw = os.environ.get("ALLOWED_ORIGIN", "http://localhost:3000")
+ALLOWED_ORIGINS = [origin.strip() for origin in _allowed_origins_raw.split(",") if origin.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 

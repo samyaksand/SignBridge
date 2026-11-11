@@ -40,7 +40,11 @@ DEFAULT_REQUESTY_BASE_URL = "https://router.requesty.ai/v1"
 MAX_WORDS = 12
 MAX_WORD_LENGTH = 40
 REQUEST_TIMEOUT_SECONDS = 9
-MAX_FALLBACK_ATTEMPTS = 3  # bounded total attempts across the priority list
+# Bounded to the length of REQUESTY_MODEL_PRIORITY itself: every model in the
+# list gets one real attempt before giving up, since a dead or
+# empty-responding model earlier in the list should never block reaching a
+# working one later in it.
+MAX_FALLBACK_ATTEMPTS = len(REQUESTY_MODEL_PRIORITY) + 1  # +1 for an optional REQUESTY_MODEL override
 
 # Small local curated map from confirmed words to natural follow-on phrases.
 # This is the fallback path that always runs without a REQUESTY_API_KEY.
@@ -128,12 +132,26 @@ def _is_transient_error(exc: Exception) -> bool:
     if any(token in name for token in ("timeout", "ratelimit", "serviceunavailable", "internalservererror", "apiconnectionerror")):
         return True
     message = str(exc).lower()
-    if "model" in message and ("unavailable" in message or "not found" in message or "does not exist" in message):
+    if "model" in message and (
+        "unavailable" in message
+        or "not found" in message
+        or "does not exist" in message
+        or "no longer available" in message
+        or "not approved for this api key" in message
+    ):
         return True
     return False
 
 
 def _is_auth_error(exc: Exception) -> bool:
+    # A 403 can mean two different things on Requesty's router: the whole
+    # API key is invalid/revoked (a real auth failure, must abort), or this
+    # one model just is not on this key's approved list (should be skipped
+    # like any other unavailable model, not treated as a fatal account
+    # problem). Only the first is a genuine auth error.
+    message = str(exc).lower()
+    if "not approved for this api key" in message:
+        return False
     status = getattr(exc, "status_code", None) or getattr(exc, "status", None)
     if status in (401, 403):
         return True

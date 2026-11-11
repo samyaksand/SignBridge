@@ -12,29 +12,23 @@
   --color-text: #1d1b2e;
   --color-text-muted: #5c5a74;
 
-  /* Parent mode - deep midnight navy / indigo */
-  --color-navy-950: #060815;
-  --color-navy-900: #0a0e22;
-  --color-navy-800: #121736;
-  --color-navy-700: #1c2350;
-  --color-navy-border: #2e3570;
-  --color-navy-text: #eef0fc;
-  --color-navy-text-muted: #a9aed8;
-
-  /* Brand: indigo, teal, turquoise, violet */
-  --color-teal-600: #0d7d85;
-  --color-teal-500: #159099;
-  --color-teal-400: #2cb3bb;
-  --color-indigo-600: #4338ca;
-  --color-indigo-500: #5146e0;
-  --color-indigo-400: #7c76ed;
-  --color-violet-500: #7c4ddb;
-  --color-blue-600: #2655d1;
-  --color-blue-500: #3a6bf0;
-  --color-blue-400: #6a8ef6;
+  /* Brand: warm green, gold, blue (NGO / children's audience). Token
+     names reflect their real colors: green, gold, blue. The CTA green
+     (--color-green-500) is deliberately a touch darker than a plain
+     brand-green midpoint so white text on it passes WCAG AA contrast
+     (see the comment below). */
+  --color-green-600: #15803d;
+  --color-green-500: #16843e;
+  --color-green-400: #3fb868;
+  --color-gold-600: #6e4e00;
+  --color-gold-500: #8a6400;
+  --color-gold-400: #eead0e;
+  --color-blue-600: #1457ab;
+  --color-blue-500: #1d6fd6;
+  --color-blue-400: #5a93e2;
 
   /* Status */
-  --color-success: #1f9d55;
+  --color-success: #1a9c4a;
   --color-warning: #b9792a;
   --color-danger: #c23b3b;
 
@@ -64,10 +58,9 @@
   --shadow-sm: 0 1px 2px rgba(20, 18, 30, 0.06);
   --shadow-md: 0 4px 16px -4px rgba(20, 18, 30, 0.12);
   --shadow-lg: 0 12px 32px -8px rgba(20, 18, 30, 0.18);
-  --shadow-navy-glow: 0 0 60px -12px rgba(81, 70, 224, 0.4);
 
   /* Focus ring */
-  --focus-ring: 0 0 0 3px rgba(81, 70, 224, 0.55);
+  --focus-ring: 0 0 0 3px rgba(26, 156, 74, 0.55); /* matches old --color-green-500 (#1a9c4a) hue, unchanged */
 
   /* Motion */
   --motion-fast: 120ms;
@@ -170,7 +163,7 @@ a, button {
   position: absolute;
   left: -9999px;
   top: 0;
-  background: var(--color-teal-600);
+  background: var(--color-green-600);
   color: white;
   padding: var(--space-3) var(--space-5);
   border-radius: var(--radius-md);
@@ -199,17 +192,17 @@ a, button {
   inset: -10%;
   opacity: 0.55;
   background:
-    radial-gradient(38rem 28rem at 12% 8%, rgba(81, 70, 224, 0.16), transparent 60%),
-    radial-gradient(42rem 32rem at 88% 18%, rgba(21, 144, 153, 0.14), transparent 60%),
-    radial-gradient(34rem 30rem at 50% 95%, rgba(124, 77, 219, 0.1), transparent 65%);
+    radial-gradient(38rem 28rem at 12% 8%, rgba(26, 156, 74, 0.16), transparent 60%),
+    radial-gradient(42rem 32rem at 88% 18%, rgba(29, 111, 214, 0.14), transparent 60%),
+    radial-gradient(34rem 30rem at 50% 95%, rgba(234, 173, 14, 0.12), transparent 65%);
 }
 
 :root[data-theme="dark"] .sb-ambient__glow {
   opacity: 0.8;
   background:
-    radial-gradient(38rem 28rem at 12% 8%, rgba(81, 70, 224, 0.28), transparent 60%),
-    radial-gradient(42rem 32rem at 88% 18%, rgba(44, 179, 187, 0.2), transparent 60%),
-    radial-gradient(34rem 30rem at 50% 95%, rgba(124, 77, 219, 0.18), transparent 65%);
+    radial-gradient(38rem 28rem at 12% 8%, rgba(63, 184, 104, 0.28), transparent 60%),
+    radial-gradient(42rem 32rem at 88% 18%, rgba(90, 147, 226, 0.2), transparent 60%),
+    radial-gradient(34rem 30rem at 50% 95%, rgba(234, 173, 14, 0.18), transparent 65%);
 }
 
 .sb-ambient__lines {
@@ -225,13 +218,13 @@ a, button {
 }
 
 .sb-ambient__lines line {
-  stroke: var(--color-indigo-400);
+  stroke: var(--color-gold-400);
   stroke-width: 1;
   opacity: 0.35;
 }
 
 .sb-ambient__lines circle {
-  fill: var(--color-teal-400);
+  fill: var(--color-green-400);
   opacity: 0.55;
 }
 
@@ -263,72 +256,6 @@ a, button {
 
 :root[data-reduced-motion="true"] .sb-ambient__lines .sb-ambient__node {
   animation: none;
-}
-
-/* ==========================================================================
-   Hero visual: a focused "signs, text, pictures" motif that sits inside the
-   hero, layered above the ambient background. CSS/SVG only.
-   ========================================================================== */
-.sb-hero-visual {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  gap: var(--space-4);
-}
-
-.sb-hero-visual__chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-sm);
-  min-width: 88px;
-  transition: transform var(--motion-base) var(--motion-ease),
-    box-shadow var(--motion-base) var(--motion-ease),
-    border-color var(--motion-base) var(--motion-ease);
-}
-
-.sb-hero-visual__chip[data-active="true"] {
-  border-color: var(--color-indigo-400);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-4px);
-}
-
-.sb-hero-visual__chip span {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-}
-
-.sb-hero-visual__chip[data-active="true"] span {
-  color: var(--color-indigo-500);
-}
-
-.sb-hero-visual__pulse {
-  animation: sb-pulse 2.4s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sb-hero-visual__pulse {
-    animation: none;
-  }
-}
-
-:root[data-reduced-motion="true"] .sb-hero-visual__pulse {
-  animation: none;
-}
-
-@keyframes sb-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
-  }
 }
 
 /* ==========================================================================
@@ -374,10 +301,63 @@ a, button {
 .sb-mode-card:focus-within {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--color-indigo-400);
+  border-color: var(--color-gold-400);
 }
 
 .sb-mode-card[data-highlighted="true"] {
-  border-color: var(--color-indigo-500);
+  border-color: var(--color-gold-500);
   box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================================
+   Dictionary browsing: dialog entrance, word-card hover, thumbnail
+   fallback. Used by the Explore Signs page over the large ISLRTC word
+   dictionary. Plain CSS only, no animation library.
+   ========================================================================== */
+@keyframes sb-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sb-dialog-panel {
+  animation: sb-dialog-in var(--motion-base) var(--motion-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-dialog-panel {
+    animation: none;
+  }
+}
+
+:root[data-reduced-motion="true"] .sb-dialog-panel {
+  animation: none;
+}
+
+.sb-word-card {
+  transition: transform var(--motion-fast) var(--motion-ease),
+    box-shadow var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease);
+}
+
+.sb-word-card:hover,
+.sb-word-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-green-400);
+}
+
+.sb-thumb-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-surface-muted), var(--color-border));
+  color: var(--color-text-muted);
 }

@@ -13,11 +13,11 @@ function renderCards() {
 }
 
 describe('CardsClient', () => {
-  it('shows all 36 cards by default', () => {
+  it('shows all 136 cards by default', () => {
     renderCards();
     // Count buttons that represent a card, approximate by role button with img.
     const buttons = screen.getAllByRole('button').filter((b) => b.querySelector('img'));
-    expect(buttons.length).toBe(36);
+    expect(buttons.length).toBe(136);
   });
 
   it('filters cards by search text', async () => {
@@ -72,14 +72,14 @@ describe('CardsClient', () => {
     expect(screen.getByText(/No cards match your search/)).toBeInTheDocument();
   });
 
-  it('clearing the search box after a filter restores all 36 cards', async () => {
+  it('clearing the search box after a filter restores all 136 cards', async () => {
     const user = userEvent.setup();
     renderCards();
     const search = screen.getByLabelText('Search cards');
     await user.type(search, 'thank you');
     await user.clear(search);
     const buttons = screen.getAllByRole('button').filter((b) => b.querySelector('img'));
-    expect(buttons.length).toBe(36);
+    expect(buttons.length).toBe(136);
   });
 
   it('allows adding the same card twice, producing two separate chips', async () => {
@@ -90,6 +90,36 @@ describe('CardsClient', () => {
     await user.click(cardButton);
     const chips = screen.getAllByRole('button', { name: /Remove I need help/i });
     expect(chips.length).toBe(2);
+  });
+
+  it('shows a related-lesson link only for cards with a genuine topical video match', async () => {
+    const user = userEvent.setup();
+    renderCards();
+
+    // "Hello!" genuinely relates to the greetings video.
+    await user.click(screen.getByRole('button', { name: 'Feelings' }));
+    expect(
+      screen.queryByRole('button', { name: /Watch a related ISL conversation lesson/i })
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'All' }));
+    const helloLinks = screen.getAllByRole('button', {
+      name: /Watch a related ISL conversation lesson/i,
+    });
+    expect(helloLinks.length).toBeGreaterThan(0);
+  });
+
+  it('expanding a related-lesson link shows the honest "not a direct demonstration" framing and a real video', async () => {
+    const user = userEvent.setup();
+    renderCards();
+    const search = screen.getByLabelText('Search cards');
+    await user.type(search, 'Hello!');
+
+    const link = screen.getByRole('button', { name: /Watch a related ISL conversation lesson/i });
+    await user.click(link);
+
+    expect(screen.getByText(/not a direct demonstration/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Hide related lesson/i })).toBeInTheDocument();
   });
 
   it('rapidly clicking Clear message repeatedly never throws and leaves the message empty', async () => {

@@ -15,10 +15,6 @@ export default function PrivacyPage() {
         </p>
         <p>No ads, no trackers, no analytics scripts watching what you do.</p>
         <p>
-          Family Practice and Child Mode only keep things in memory while the page is open.
-          Nothing is saved to a server.
-        </p>
-        <p>
           If a future version adds optional AI-powered suggestions (through a service called
           Requesty), it will only ever send the words you already confirmed, never raw video
           or camera data, and only if you or a grown-up turns it on with their own API key.

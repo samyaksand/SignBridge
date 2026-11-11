@@ -23,8 +23,8 @@ const REQUIRED_CATEGORIES = [
 ];
 
 describe('communication card data integrity', () => {
-  it('has exactly 36 cards', () => {
-    expect(CARDS).toHaveLength(36);
+  it('has exactly 136 cards', () => {
+    expect(CARDS).toHaveLength(136);
   });
 
   it('has unique ids', () => {
@@ -32,10 +32,20 @@ describe('communication card data integrity', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('has 6 categories with 6 cards each', () => {
+  it('has the original 6 categories with 6 cards each, untouched by the expansion', () => {
     for (const category of REQUIRED_CATEGORIES) {
       const count = CARDS.filter((c) => c.category === category).length;
       expect(count).toBe(6);
+    }
+  });
+
+  it('has real new categories from the 100-card expansion, each with several cards', () => {
+    const allCategories = new Set(CARDS.map((c) => c.category));
+    const newCategories = [...allCategories].filter((c) => !REQUIRED_CATEGORIES.includes(c));
+    expect(newCategories.length).toBeGreaterThanOrEqual(8);
+    for (const category of newCategories) {
+      const count = CARDS.filter((c) => c.category === category).length;
+      expect(count).toBeGreaterThanOrEqual(3);
     }
   });
 

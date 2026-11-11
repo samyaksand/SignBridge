@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/Button';
 import { StatusMessage } from '@/components/ui/StatusMessage';
 import { usePreferences } from '@/lib/context/PreferencesContext';
 import cardsData from '@/lib/data/communicationCards.json';
+import { SignVideo } from '@/components/isl/SignVideo';
+import { getRelatedVideoForPhrase } from '@/lib/data/videoTopicLinks';
+import { selectPreferredVoice } from '@/lib/speech/selectVoice';
 
 interface CardEntry {
   id: string;
@@ -22,10 +25,11 @@ const CARDS = cardsData as CardEntry[];
 const CATEGORIES = Array.from(new Set(CARDS.map((c) => c.category)));
 
 export function CardsClient() {
-  const { speechEnabled, speechSupported } = usePreferences();
+  const { speechEnabled, speechSupported, speechLanguage } = usePreferences();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string | null>(null);
   const [message, setMessage] = useState<CardEntry[]>([]);
+  const [videoCardId, setVideoCardId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     return CARDS.filter((c) => {
@@ -50,11 +54,14 @@ export function CardsClient() {
     if (!speechEnabled) return;
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const utterance = new SpeechSynthesisUtterance(message.map((c) => c.en).join('. '));
-    window.speechSynthesis.speak(utterance);
+    selectPreferredVoice(speechLanguage).then((voice) => {
+      if (voice) utterance.voice = voice;
+      window.speechSynthesis.speak(utterance);
+    });
   };
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+    <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-semibold text-[var(--color-text)] sm:text-3xl">
         Quick Communication Cards
       </h1>
@@ -65,18 +72,23 @@ export function CardsClient() {
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search
-            size={18}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
-            aria-hidden="true"
-          />
-          <Input
-            aria-label="Search cards"
-            placeholder="Search for a word or phrase..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-10"
-          />
+          <label htmlFor="cards-search" className="mb-1 block text-xs font-medium text-[var(--color-text-muted)]">
+            Search cards
+          </label>
+          <div className="relative">
+            <Search
+              size={18}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+              aria-hidden="true"
+            />
+            <Input
+              id="cards-search"
+              placeholder="Search for a word or phrase..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
         </div>
       </div>
 
@@ -86,8 +98,8 @@ export function CardsClient() {
           aria-pressed={category === null}
           className={`min-h-[44px] rounded-full border px-4 text-sm font-medium transition-colors ${
             category === null
-              ? 'border-[var(--color-indigo-500)] bg-[var(--color-indigo-500)] text-white'
-              : 'border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-indigo-400)]'
+              ? 'border-[var(--color-gold-500)] bg-[var(--color-gold-500)] text-white'
+              : 'border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-gold-400)]'
           }`}
         >
           All
@@ -99,8 +111,8 @@ export function CardsClient() {
             aria-pressed={category === cat}
             className={`min-h-[44px] rounded-full border px-4 text-sm font-medium transition-colors ${
               category === cat
-                ? 'border-[var(--color-indigo-500)] bg-[var(--color-indigo-500)] text-white'
-                : 'border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-indigo-400)]'
+                ? 'border-[var(--color-gold-500)] bg-[var(--color-gold-500)] text-white'
+                : 'border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-gold-400)]'
             }`}
           >
             {cat}
@@ -154,17 +166,43 @@ export function CardsClient() {
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {filtered.map((card) => (
-            <button
-              key={card.id}
-              onClick={() => addToMessage(card)}
-              className="flex min-h-[48px] flex-col items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-center transition-[transform,box-shadow,border-color] hover:-translate-y-0.5 hover:border-[var(--color-teal-400)] hover:shadow-[var(--shadow-md)]"
-            >
-              <Image src={card.illustration} alt="" width={56} height={56} aria-hidden="true" />
-              <span className="text-xs font-semibold text-[var(--color-text)]">{card.en}</span>
-              <span className="text-[11px] text-[var(--color-text-muted)]">{card.hi}</span>
-            </button>
-          ))}
+          {filtered.map((card) => {
+            const relatedVideo = getRelatedVideoForPhrase(card.en);
+            return (
+              <div
+                key={card.id}
+                className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-center transition-[transform,box-shadow,border-color] hover:-translate-y-0.5 hover:border-[var(--color-green-400)] hover:shadow-[var(--shadow-md)]"
+              >
+                <button
+                  onClick={() => addToMessage(card)}
+                  className="flex min-h-[48px] flex-col items-center gap-2"
+                >
+                  <Image src={card.illustration} alt="" width={56} height={56} aria-hidden="true" />
+                  <span className="text-xs font-semibold text-[var(--color-text)]">{card.en}</span>
+                  <span className="text-[11px] text-[var(--color-text-muted)]">{card.hi}</span>
+                </button>
+                {relatedVideo && (
+                  <button
+                    onClick={() =>
+                      setVideoCardId((current) => (current === card.id ? null : card.id))
+                    }
+                    className="text-[11px] font-medium text-[var(--color-green-600)] underline"
+                  >
+                    {videoCardId === card.id ? 'Hide related lesson' : 'Watch a related ISL conversation lesson'}
+                  </button>
+                )}
+                {relatedVideo && videoCardId === card.id && (
+                  <div className="mt-1 text-left">
+                    <p className="mb-1 text-[11px] text-[var(--color-text-muted)]">
+                      This is a related ISL lesson video that touches this topic. It is not a
+                      direct demonstration of this exact phrase being signed.
+                    </p>
+                    <SignVideo sign={relatedVideo} />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

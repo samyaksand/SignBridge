@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import Home from '@/app/page';
 import { PreferencesProvider } from '@/lib/context/PreferencesContext';
 
@@ -12,34 +11,46 @@ function renderHome() {
   );
 }
 
-describe('Home page communication mode wiring', () => {
-  it('highlights the mode-entry card(s) matching the selected communication style', async () => {
-    const user = userEvent.setup();
+describe('Home page', () => {
+  it('shows the mode entry cards with real links', () => {
     renderHome();
-
-    const cardsLink = screen.getByRole('link', { name: 'Browse cards' });
-    const cardsCard = cardsLink.closest('[data-highlighted]');
-    expect(cardsCard).toHaveAttribute('data-highlighted', 'false');
-
-    await user.click(screen.getByRole('radio', { name: /Picture cards/i }));
-
-    expect(cardsCard).toHaveAttribute('data-highlighted', 'true');
+    for (const name of ['Browse cards']) {
+      expect(screen.getByRole('link', { name })).toBeInTheDocument();
+    }
   });
 
-  it('reflects the selected communication mode in the hero visual', async () => {
-    const user = userEvent.setup();
+  it('does not show the removed Family Practice entry card', () => {
     renderHome();
+    expect(screen.queryByRole('link', { name: 'Start practicing' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Family Practice' })).not.toBeInTheDocument();
+  });
 
-    const signsChip = screen.getByText('Signs').closest('[data-active]');
-    const picturesChip = screen.getByText('Pictures').closest('[data-active]');
+  it('shows the Letter Lens entry card linking to the fingerspelling feature', () => {
+    renderHome();
+    expect(screen.getByRole('heading', { name: 'Letter Lens' })).toBeInTheDocument();
+    const links = screen.getAllByRole('link', { name: 'Try it' });
+    expect(links.some((link) => link.getAttribute('href') === '/asl-fingerspelling-demo')).toBe(
+      true
+    );
+  });
 
-    // Default mode is "combination", so every chip starts active.
-    expect(signsChip).toHaveAttribute('data-active', 'true');
-    expect(picturesChip).toHaveAttribute('data-active', 'true');
+  it('puts an Explore Signs preview above the fold, with a link to the full page', () => {
+    renderHome();
+    expect(screen.getByRole('heading', { name: 'Explore Signs' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /See all .* signs/i })).toHaveAttribute(
+      'href',
+      '/explore'
+    );
+  });
 
-    await user.click(screen.getByRole('radio', { name: /ISL references/i }));
+  it('shows the Free and No login claims near the top', () => {
+    renderHome();
+    expect(screen.getByText('Free')).toBeInTheDocument();
+    expect(screen.getByText('No login')).toBeInTheDocument();
+  });
 
-    expect(signsChip).toHaveAttribute('data-active', 'true');
-    expect(picturesChip).toHaveAttribute('data-active', 'false');
+  it('does not contain the removed redundant "Built for families" card', () => {
+    renderHome();
+    expect(screen.queryByText('Built for families learning together')).not.toBeInTheDocument();
   });
 });
