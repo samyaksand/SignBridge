@@ -23,14 +23,11 @@ venv/
 ml/datasets/
 ml/checkpoints/
 ml/logs/
-*.onnx
-*.npy
-*.npz
-# Exception: the real, vendored word-recognition model weights for the
-# isl-sign-recognition service are a genuine third-party model file this
-# service needs to run, not a generated ML training artifact.
-!backend/services/isl-sign-recognition/model.npz
 
+*
+# Exception: the real, vendored word-recognition model weights, merged
+# into backend/app/isl_recognition, are a genuine third-party model file
+# this backend needs to run, not a generated ML training artifact.
 # OS / editor
 .DS_Store
 Thumbs.db
