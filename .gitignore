@@ -4,6 +4,9 @@ node_modules/
 out/
 build/
 dist/
+.open-next/
+.dev.vars
+.wrangler/
 
 # Env files (never commit secrets)
 .env
@@ -23,11 +26,14 @@ venv/
 ml/datasets/
 ml/checkpoints/
 ml/logs/
-
-*
+*.onnx
+*.npy
+*.npz
 # Exception: the real, vendored word-recognition model weights, merged
 # into backend/app/isl_recognition, are a genuine third-party model file
 # this backend needs to run, not a generated ML training artifact.
+!backend/app/isl_recognition/model.npz
+
 # OS / editor
 .DS_Store
 Thumbs.db
