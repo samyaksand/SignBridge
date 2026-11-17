@@ -1,7 +1,21 @@
+const FOOTER_FEATURE_LINKS = [
+  { href: '/explore', label: 'Explore Signs' },
+  { href: '/cards', label: 'Quick Cards' },
+  { href: '/soundsigns', label: 'Talk to Sign' },
+  { href: '/asl-fingerspelling-demo', label: 'Letter Lens' },
+];
+
 export function Footer() {
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface)] py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 text-sm text-[var(--color-text-muted)] sm:px-6">
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-1">
+          {FOOTER_FEATURE_LINKS.map((link) => (
+            <a key={link.href} href={link.href} className="font-medium text-[var(--color-text)] underline">
+              {link.label}
+            </a>
+          ))}
+        </nav>
         <p>
           SignBridge never records or uploads your camera. Everything stays on your own
           device. Read our{' '}
@@ -9,10 +23,6 @@ export function Footer() {
             privacy page
           </a>{' '}
           for the full story.
-        </p>
-        <p>
-          SignBridge is not a full ISL translator, it supports a small, honest set of words and
-          phrases.
         </p>
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
           <span>© {new Date().getFullYear()} SignBridge. Made with care.</span>

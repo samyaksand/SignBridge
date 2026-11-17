@@ -43,10 +43,19 @@ describe('Home page', () => {
     );
   });
 
-  it('shows the Free and No login claims near the top', () => {
+  it('states the no-account, privacy-first claim', () => {
     renderHome();
-    expect(screen.getByText('Free')).toBeInTheDocument();
-    expect(screen.getByText('No login')).toBeInTheDocument();
+    expect(screen.getByText(/no account, no ads, no tracking/i)).toBeInTheDocument();
+  });
+
+  it('leads with the child-friendly hero heading and both primary CTAs', () => {
+    renderHome();
+    expect(screen.getByRole('heading', { name: "Let's learn to sign!" })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Start Learning' })).toHaveAttribute('href', '/explore');
+    expect(screen.getByRole('link', { name: 'Explore Quick Cards' })).toHaveAttribute(
+      'href',
+      '/cards'
+    );
   });
 
   it('does not contain the removed redundant "Built for families" card', () => {
