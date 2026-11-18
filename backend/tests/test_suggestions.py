@@ -143,6 +143,20 @@ def test_model_no_longer_available_message_is_transient():
     assert _is_transient_error(err) is True
 
 
+def test_invalid_model_message_is_transient():
+    """Regression: Requesty's router can rewrite a model name internally
+    (e.g. 'mistral/leanstral-1-5' surfaced back as 'labs-leanstral-1-5')
+    and reject it as unrecognized with a 400. A real request crashed with
+    an unhandled 500 before this case was added, since '400' is not in
+    the transient status-code list and the message didn't match any of
+    the other model-unavailable phrasings."""
+    err = RuntimeError(
+        "Error code: 400 - {'error': {'origin': 'provider', 'message': "
+        "'Invalid model: labs-leanstral-1-5'}}"
+    )
+    assert _is_transient_error(err) is True
+
+
 def test_model_not_approved_for_key_is_transient_not_auth():
     """Regression: Requesty returns a real 403 when a specific model is not
     on this key's approved list, not when the key itself is invalid. This

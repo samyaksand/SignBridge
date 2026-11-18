@@ -19,11 +19,17 @@ across India, has almost none. A low-income family wanting to learn
 together is usually priced out entirely, not because they lack ability,
 but because every real option costs money they don't have.
 
-SignBridge closes that gap: **free, full stop**, built specifically for
-ISL rather than bolted on as an afterthought, covering everything from
-daily greetings to family, food, and emotions, with no account and no
-camera data ever leaving the device, and crediting the Deaf community's
-own verified source material rather than guessing at it.
+SignBridge closes that gap:
+
+- **Free, full stop.** No class fee standing between any family and
+  learning together.
+- **Built for everyone.** No account, no camera data ever leaving the
+  device, accessible by design.
+- **Built for ISL specifically.** Not bolted on as an afterthought.
+- **Covers real, everyday life.** Greetings, family, food, emotions, and
+  more, not a narrow demo vocabulary.
+- **Credits its source.** Every word traces back to the Deaf community's
+  own verified material, never guessed at.
 
 <div align="center">
 

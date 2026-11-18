@@ -113,6 +113,7 @@ def _is_transient_error(exc):
         or "does not exist" in message
         or "no longer available" in message
         or "not approved for this api key" in message
+        or "invalid model" in message
     ):
         return True
     return False
