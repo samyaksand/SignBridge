@@ -26,9 +26,12 @@ venv/
 ml/datasets/
 ml/checkpoints/
 ml/logs/
+ml/artifacts/
+ml/models/*.task
 *.onnx
 *.npy
 *.npz
+*.pt
 # Exception: the real, vendored word-recognition model weights, merged
 # into backend/app/isl_recognition, are a genuine third-party model file
 # this backend needs to run, not a generated ML training artifact.
@@ -40,5 +43,4 @@ Thumbs.db
 .vscode/
 *.log
 
-# Claude Code's own local session/config data (never public)
 .claude/
