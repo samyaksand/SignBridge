@@ -236,7 +236,16 @@ def get_suggestions(confirmed_words: List[str], output_language: OutputLanguage 
     if not is_requesty_configured():
         return _local_fallback(confirmed_words, output_language)
 
-    result = _call_requesty(confirmed_words, output_language)
+    try:
+        result = _call_requesty(confirmed_words, output_language)
+    except RequestyAuthError:
+        raise
+    except Exception:  # noqa: BLE001 - any unexpected Requesty failure must
+        # still fall back to the local curated list below, never crash the
+        # request outright. Auth errors are the one deliberate exception,
+        # re-raised above so misconfiguration stays visible.
+        logger.warning("requesty raised an unexpected error, falling back to local suggestions")
+        result = None
     if result is not None:
         return result
 

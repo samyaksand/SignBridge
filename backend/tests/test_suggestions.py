@@ -368,6 +368,29 @@ def test_get_suggestions_falls_back_locally_when_requesty_exhausts_transient_fai
     assert "I need help" in result
 
 
+def test_get_suggestions_falls_back_locally_on_an_unclassified_requesty_exception(monkeypatch):
+    """Regression: a Requesty failure that is neither transient nor an auth
+    error (a brand-new, unanticipated error shape) must still fall back to
+    the local curated list, not crash the request. _call_requesty re-raises
+    immediately on a non-transient, non-auth exception, so get_suggestions
+    itself must catch it rather than letting it propagate uncaught."""
+    import app.suggestions as suggestions_module
+
+    monkeypatch.setenv("REQUESTY_API_KEY", "fake-key-for-test")
+    monkeypatch.delenv("REQUESTY_MODEL", raising=False)
+
+    class _UnclassifiedError(Exception):
+        pass
+
+    fake_client = _FakeOpenAIClient([_UnclassifiedError("a completely new, unanticipated failure shape")])
+    import openai as openai_module
+
+    monkeypatch.setattr(openai_module, "OpenAI", lambda **kwargs: fake_client)
+
+    result = suggestions_module.get_suggestions(["help"], "en")
+    assert "I need help" in result
+
+
 def test_call_requesty_timeout_is_treated_as_transient(monkeypatch):
     """A request timeout from the SDK must be classified as transient
     (cycles to the next model) rather than surfacing as a hard failure."""

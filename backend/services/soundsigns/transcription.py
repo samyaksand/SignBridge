@@ -317,8 +317,14 @@ def text_to_isl_gloss(text: str) -> str:
     if is_requesty_configured():
         try:
             gloss = _call_requesty(text)
-        except RequestyAuthError as e:
+        except RequestyAuthError:
             logger.warning("Requesty auth failed, trying last-resort providers instead")
+            gloss = None
+        except Exception:  # noqa: BLE001 - any unexpected Requesty failure must
+            # still fall through to the backup providers below, never crash
+            # the request outright. A genuinely unclassified exception here
+            # is exactly the scenario the backup providers exist for.
+            logger.warning("Requesty raised an unexpected error, trying last-resort providers instead")
             gloss = None
 
     if gloss is None:
